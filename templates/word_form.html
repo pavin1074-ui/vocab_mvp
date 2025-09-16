@@ -1,0 +1,371 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Добавить слово</h1>
+    
+    <div class="instructions">
+        <h3>📝 Инструкция:</h3>
+        <ol>
+            <li>Введите слово на английском или русском языке</li>
+            <li>Перевод появится автоматически через 1.5 сек</li>
+            <li>Используйте кнопки для ручного управления</li>
+            <li>Откройте консоль разработчика (F12) для отладки</li>
+        </ol>
+    </div>
+    <form method="post" id="word-form">{% csrf_token %}
+        <div>
+            <label for="id_text">Text:</label>
+            <div class="input-group">
+                <input type="text" name="text" id="id_text" maxlength="255" required>
+                <button type="button" id="lang-toggle" title="Переключить язык">🇷🇺</button>
+                <button type="button" id="voice-btn" title="Голосовой ввод">🎤</button>
+            </div>
+            <small id="voice-status" class="voice-status"></small>
+        </div>
+        <div>
+            <label for="id_translation">Translation:</label>
+            <input type="text" name="translation" id="id_translation" maxlength="255" required>
+            <button type="button" id="translate-btn">Перевести автоматически</button>
+            <button type="button" id="test-api-btn" style="background: #6c757d; margin-left: 10px;">Тест API</button>
+            <button type="button" id="force-translate-btn" style="background: #28a745; margin-left: 10px;">Принудить перевод</button>
+        </div>
+        <button type="submit">Сохранить</button>
+    </form>
+    
+    <style>
+        .input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .input-group input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        #voice-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #voice-btn:hover {
+            background: #218838;
+        }
+        #voice-btn:active, #voice-btn.recording {
+            background: #dc3545;
+        }
+        #lang-toggle {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #lang-toggle:hover {
+            background: #545b62;
+        }
+        .voice-status {
+            color: #666;
+            font-style: italic;
+        }
+        #translate-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #translate-btn:hover {
+            background: #0056b3;
+        }
+        #translate-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        button[type="submit"] {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button[type="submit"]:hover {
+            background: #218838;
+        }
+        .instructions {
+            background: #e9ecef;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        .instructions h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+        .instructions ol {
+            margin-bottom: 0;
+        }
+    </style>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const textInput = document.getElementById('id_text');
+        const translationInput = document.getElementById('id_translation');
+        const translateBtn = document.getElementById('translate-btn');
+        const voiceBtn = document.getElementById('voice-btn');
+        const voiceStatus = document.getElementById('voice-status');
+        const langToggle = document.getElementById('lang-toggle');
+        
+        // Текущий язык распознавания
+        let currentLang = 'ru-RU';
+        
+        // Логика переключения языка
+        if (langToggle) {
+            langToggle.addEventListener('click', function() {
+                if (currentLang === 'ru-RU') {
+                    currentLang = 'en-US';
+                    langToggle.textContent = '🇺🇸';
+                    langToggle.title = 'Переключить на русский';
+                } else {
+                    currentLang = 'ru-RU';
+                    langToggle.textContent = '🇷🇺';
+                    langToggle.title = 'Переключить на английский';
+                }
+                if (recognition) {
+                    recognition.lang = currentLang;
+                }
+            });
+        }
+        
+        // Проверка поддержки Web Speech API
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition = null;
+        
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = currentLang; // Используем текущий язык
+            
+            recognition.onstart = function() {
+                voiceBtn.classList.add('recording');
+                voiceBtn.textContent = '🟤'; // Красный кружок
+                voiceStatus.textContent = 'Говорите...';
+            };
+            
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                textInput.value = transcript;
+                voiceStatus.textContent = 'Распознано: "' + transcript + '"';
+                
+                // Автоматически переводим
+                if (transcript && !translationInput.value.trim()) {
+                    setTimeout(translateWord, 500);
+                }
+            };
+            
+            recognition.onerror = function(event) {
+                voiceStatus.textContent = 'Ошибка распознавания: ' + event.error;
+            };
+            
+            recognition.onend = function() {
+                voiceBtn.classList.remove('recording');
+                voiceBtn.textContent = '🎤';
+                if (!voiceStatus.textContent.includes('Распознано')) {
+                    voiceStatus.textContent = '';
+                }
+            };
+            
+            voiceBtn.addEventListener('click', function() {
+                if (recognition && !voiceBtn.classList.contains('recording')) {
+                    recognition.start();
+                }
+            });
+        } else {
+            voiceBtn.style.display = 'none';
+            voiceStatus.textContent = 'Голосовой ввод не поддерживается вашим браузером';
+        }
+        
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        async function translateWord() {
+            const text = textInput.value.trim();
+            if (!text) {
+                alert('Введите слово для перевода');
+                return;
+            }
+            
+            console.log('[DEBUG] Starting translation for:', text);
+            
+            translateBtn.disabled = true;
+            translateBtn.textContent = 'Переводим...';
+            
+            // Отображаем статус
+            if (voiceStatus) {
+                voiceStatus.textContent = 'Переводим слово...';
+                voiceStatus.style.color = '#007bff';
+            }
+            
+            try {
+                const requestData = { text: text };
+                console.log('[DEBUG] Sending request:', requestData);
+                
+                const response = await fetch('/words/translate/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData)
+                });
+                
+                console.log('[DEBUG] Response status:', response.status);
+                
+                const data = await response.json();
+                console.log('[DEBUG] Response data:', data);
+                
+                if (response.ok) {
+                    translationInput.value = data.translation || '';
+                    
+                    // Показываем информацию о переводе
+                    let statusMsg = `✅ Переведено: ${data.translation}`;
+                    if (data.note) {
+                        statusMsg += ` (${data.note})`;
+                    }
+                    
+                    if (voiceStatus) {
+                        voiceStatus.textContent = statusMsg;
+                        voiceStatus.style.color = '#28a745';
+                        setTimeout(() => {
+                            if (voiceStatus.textContent === statusMsg) {
+                                voiceStatus.textContent = '';
+                                voiceStatus.style.color = '#666';
+                            }
+                        }, 3000);
+                    }
+                } else {
+                    const errorMsg = data.error || 'Неизвестная ошибка';
+                    console.error('[ERROR] Translation failed:', data);
+                    
+                    if (voiceStatus) {
+                        voiceStatus.textContent = `⚠️ Ошибка: ${errorMsg}`;
+                        voiceStatus.style.color = '#dc3545';
+                    }
+                    
+                    // Показываем подробности ошибки в консоли
+                    if (data.suggestion) {
+                        console.log('[SUGGESTION]', data.suggestion);
+                    }
+                }
+            } catch (error) {
+                console.error('[ERROR] Network error:', error);
+                const errorText = `🌐 Ошибка сети: ${error.message}`;
+                
+                if (voiceStatus) {
+                    voiceStatus.textContent = errorText;
+                    voiceStatus.style.color = '#dc3545';
+                } else {
+                    alert(errorText);
+                }
+            } finally {
+                translateBtn.disabled = false;
+                translateBtn.textContent = 'Перевести автоматически';
+            }
+        }
+        
+        translateBtn.addEventListener('click', translateWord);
+        
+        // Обработчик тестовой кнопки
+        const testApiBtn = document.getElementById('test-api-btn');
+        testApiBtn.addEventListener('click', async function() {
+            console.log('[TEST] Testing API directly...');
+            
+            try {
+                const testResponse = await fetch('/words/translate/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text: 'продажа' })
+                });
+                
+                const testData = await testResponse.json();
+                console.log('[TEST] API response:', testData);
+                alert(`API тест: "продажа" -> "${testData.translation || 'Ошибка: ' + testData.error}"`);
+                
+            } catch (error) {
+                console.error('[TEST] API test failed:', error);
+                alert('Ошибка теста API: ' + error.message);
+            }
+        });
+        
+        // Обработчик кнопки принудительного перевода
+        const forceTranslateBtn = document.getElementById('force-translate-btn');
+        forceTranslateBtn.addEventListener('click', function() {
+            console.log('[FORCE] Force translate triggered');
+            translationInput.value = ''; // Очищаем поле перевода
+            translateWord(); // Вызываем перевод
+        });
+        
+        // Автоматический перевод при вводе
+        let timeoutId;
+        textInput.addEventListener('input', function() {
+            const currentText = textInput.value.trim();
+            const currentTranslation = translationInput.value.trim();
+            
+            console.log('[DEBUG] Input event triggered:', {
+                text: currentText,
+                translation: currentTranslation,
+                shouldTranslate: currentText && !currentTranslation
+            });
+            
+            clearTimeout(timeoutId);
+            
+            if (currentText && !currentTranslation) {
+                console.log('[DEBUG] Setting translation timeout...');
+                timeoutId = setTimeout(() => {
+                    console.log('[DEBUG] Timeout executed, calling translateWord()');
+                    translateWord();
+                }, 1500); // Увеличили задержку до 1.5 сек
+            } else {
+                console.log('[DEBUG] Auto-translation not triggered');
+            }
+        });
+    });
+    </script>
+{% endblock %}

@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>{{ word.text }}</h1>
+    
+    <div class="audio-info">
+        <h3>🔊 Озвучивание</h3>
+        <div class="voice-info">
+            💡 Нажмите кнопку 🔊 рядом со словом, чтобы прослушать произношение
+        </div>
+    </div>
+    
+    <div class="word-details">
+        <div class="detail-item">
+            <strong>Слово:</strong> {{ word.text }}
+            <div class="audio-controls">
+                <button onclick="playAudio({{ word.pk }}, 'word')" class="btn btn-audio" title="Прослушать произношение">🔊</button>
+                <a href="/words/{{ word.pk }}/audio/?type=word&lang=en" class="btn btn-sm" download>⬇️</a>
+            </div>
+        </div>
+        
+        <div class="detail-item">
+            <strong>Перевод:</strong> {{ word.translation }}
+            <div class="audio-controls">
+                <button onclick="playAudio({{ word.pk }}, 'translation')" class="btn btn-audio" title="Прослушать перевод">🔊</button>
+                <a href="/words/{{ word.pk }}/audio/?type=translation&lang=ru" class="btn btn-sm" download>⬇️</a>
+            </div>
+        </div>
+        
+        <div class="detail-item">
+            <strong>Следующее повторение:</strong> {{ word.next_review|date:"d.m.Y H:i" }}
+        </div>
+    </div>
+    
+    <div class="actions">
+        <a href="{% url 'word-list' %}" class="btn">Назад к списку</a>
+        <a href="{% url 'word-update' word.pk %}" class="btn btn-primary">Редактировать</a>
+        <a href="/words/{{ word.pk }}/audio/" class="btn btn-secondary" download="{{ word.text }}.mp3">Скачать произношение</a>
+        <a href="{% url 'word-delete' word.pk %}" class="btn btn-danger">Удалить</a>
+    </div>
+    
+    <style>
+        .voice-settings {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .voice-controls {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .voice-controls label {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            font-weight: normal;
+        }
+        .voice-controls select {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .word-details {
+            margin: 20px 0;
+        }
+        .detail-item {
+            margin: 15px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .audio-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .actions {
+            margin-top: 30px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 10px 20px;
+            text-decoration: none;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #f5f5f5;
+            color: #333;
+            cursor: pointer;
+            display: inline-block;
+        }
+        .btn:hover {
+            background: #e5e5e5;
+        }
+        .btn-primary {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        .btn-primary:hover {
+            background: #0056b3;
+        }
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            border-color: #6c757d;
+        }
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        .btn-audio {
+            font-size: 16px;
+            min-width: 40px;
+        }
+        .voice-info {
+            background: #e7f3ff;
+            padding: 10px;
+            border-radius: 4px;
+            border-left: 4px solid #007bff;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #495057;
+        }
+    </style>
+    
+    <script>
+        // Простое озвучивание без сложных настроек
+        
+        // Определяем язык по содержимому слова
+        function detectLanguage(text) {
+            // Проверяем наличие кириллицы
+            const hasCyrillic = /[а-яё]/i.test(text);
+            return hasCyrillic ? 'ru' : 'en';
+        }
+        
+        async function playAudio(wordId, type) {
+            try {
+                // Получаем текст слова со страницы
+                let textToCheck = '';
+                
+                if (type === 'word') {
+                    // Оригинальное слово в заголовке
+                    const wordElement = document.querySelector('h1');
+                    if (wordElement) {
+                        textToCheck = wordElement.textContent.trim();
+                    }
+                } else if (type === 'translation') {
+                    // Перевод - ищем в тексте после "Перевод:"
+                    const translationDiv = document.querySelector('.detail-item:nth-child(2)');
+                    if (translationDiv) {
+                        const fullText = translationDiv.textContent;
+                        // Вынимаем текст после "Перевод:"
+                        const translationMatch = fullText.match(/Перевод:\s*(.+)/);
+                        if (translationMatch) {
+                            textToCheck = translationMatch[1].trim();
+                        }
+                    }
+                }
+                
+                console.log(`[DEBUG] Озвучиваем ${type}: "${textToCheck}"`);
+                
+                // Определяем язык по содержимому
+                const lang = detectLanguage(textToCheck);
+                console.log(`[DEBUG] Определен язык: ${lang}`);
+                
+                // Параметры с правильным языком
+                const params = new URLSearchParams({
+                    type: type,
+                    lang: lang,
+                    tld: 'com'
+                });
+                
+                const response = await fetch(`/words/${wordId}/audio/?${params}`);
+                if (response.ok) {
+                    const audioBlob = await response.blob();
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    const audio = new Audio(audioUrl);
+                    
+                    audio.onended = () => {
+                        URL.revokeObjectURL(audioUrl);
+                    };
+                    
+                    await audio.play();
+                } else {
+                    const errorData = await response.json();
+                    alert('Ошибка при загрузке аудио: ' + errorData.error);
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('Ошибка воспроизведения аудио');
+            }
+        }
+    </script>
+{% endblock %}

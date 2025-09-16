@@ -1,0 +1,26 @@
+<!-- words/templates/words/word_form.html -->
+{% extends "words/base.html" %}
+
+{% block title %}{% if object %}Редактировать слово{% else %}Добавить слово{% endif %}{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    {% if object %}
+      ✏️ Редактировать слово
+    {% else %}
+      ➕ Добавить новое слово
+    {% endif %}
+  </div>
+  <div class="card-body">
+
+       <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn btn-primary">Сохранить</button>
+      <a href="{% url 'word-list' %}" class="btn btn-secondary ms-2">Отмена</a>
+    </form>
+  </div>
+</div>
+{% endblock %}
+

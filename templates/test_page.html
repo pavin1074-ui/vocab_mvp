@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Тестовая страница{% endblock %}
+
+{% block content %}
+<h2>Добро пожаловать на тестовую страницу!</h2>
+<p>На этой странице вам будет предложено перевести случайное слово.</p>
+<h3>Слово для перевода: {{ word.text }}</h3>
+<form method="post">
+    {% csrf_token %}
+    <label for="translation">Перевод:</label>
+    <input type="text" id="translation" name="translation" required>
+    <button type="submit">Проверить</button>
+</form>
+{% endblock %}

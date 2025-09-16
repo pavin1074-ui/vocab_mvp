@@ -1,0 +1,29 @@
+<!-- words/templates/words/word_list.html -->
+{% extends "words/base.html" %}
+
+{% block title %}Мои слова{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Мои слова</h1>
+
+{% if words %}
+  <ul class="list-group">
+    {% for word in words %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+          <strong>{{ word.text }}</strong> — {{ word.translation }}<br>
+          <small class="text-muted">Следующее повторение: {{ word.next_review|date:"d.m.Y H:i" }}</small>
+        </div>
+        <div>
+          <a href="{% url 'word-detail' word.pk %}" class="btn btn-sm btn-info">Просмотр</a>
+          <a href="{% url 'word-tts' word.pk %}" download class="btn btn-sm btn-success">🔊</a>
+        </div>
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p class="text-muted">У тебя пока нет слов. Добавь их 👇</p>
+{% endif %}
+
+<a href="{% url 'word-create' %}" class="btn btn-primary mt-3">Добавить слово</a>
+{% endblock %}
