@@ -50,6 +50,13 @@
     ]
   }
 }</component>
+  <component name="RunDashboard">
+    <option name="configurationTypes">
+      <set>
+        <option value="PythonConfigurationType" />
+      </set>
+    </option>
+  </component>
   <component name="RunManager" selected="Python.telegram_bot (1)">
     <configuration name="Run Telegram Bot" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="vocab_mvp" />
@@ -171,10 +178,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.telegram_bot (1)" />
-        <item itemvalue="Python.tasks" />
         <item itemvalue="Python.Run Telegram Bot" />
-        <item itemvalue="Python.settings" />
         <item itemvalue="Python.telegram_bot" />
+        <item itemvalue="Python.settings" />
+        <item itemvalue="Python.tasks" />
       </list>
     </recent_temporary>
   </component>
@@ -194,12 +201,33 @@
       <option name="presentableId" value="Default" />
       <updated>1753363810189</updated>
     </task>
+    <task id="LOCAL-00001" summary="add new file">
+      <option name="closed" value="true" />
+      <created>1758198176783</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1758198176783</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
+    <option name="OPEN_GENERIC_TABS">
+      <map>
+        <entry key="feac9d5e-de28-4787-8a71-bfbd449ed535" value="TOOL_WINDOW" />
+      </map>
+    </option>
     <option name="TAB_STATES">
       <map>
         <entry key="MAIN">
+          <value>
+            <State>
+              <option name="SHOW_DETAILS_IN_CHANGES" value="false" />
+            </State>
+          </value>
+        </entry>
+        <entry key="feac9d5e-de28-4787-8a71-bfbd449ed535">
           <value>
             <State />
           </value>

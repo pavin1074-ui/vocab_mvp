@@ -8,6 +8,7 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 from aiogram.types import Message
 from googletrans import Translator
+from random import choice
 from dotenv import load_dotenv
 
 # Загружаем .env
@@ -35,7 +36,11 @@ if not BOT_TOKEN:
     raise ValueError("BOT_TOKEN не найден в .env")
 
 bot = Bot(token=BOT_TOKEN)
-dp = Dispatcher()
+from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram import Router
+
+storage = MemoryStorage()
+dp = Dispatcher(storage=storage)
 
 main_menu_buttons = [
     [types.KeyboardButton(text="Регистрация")],
@@ -44,14 +49,51 @@ main_menu_buttons = [
     [types.KeyboardButton(text="Настройка времени тестов")],
     [types.KeyboardButton(text="Начать тест")]
 ]
-main_menu_kb = types.ReplyKeyboardMarkup(keyboard=main_menu_buttons, resize_keyboard=True)
+main_menu_kb = types.InlineKeyboardMarkup(inline_keyboard=[
+    [types.InlineKeyboardButton(text="Регистрация", callback_data="register")],
+    [types.InlineKeyboardButton(text="Ввести слово", callback_data="enter_word")],
+    [types.InlineKeyboardButton(text="Тест", callback_data="test")],
+    [types.InlineKeyboardButton(text="Настройка времени тестов", callback_data="settings")],
+    [types.InlineKeyboardButton(text="Начать тест", callback_data="start_test")]
+])
 translator = Translator()
+
+async def get_random_word():
+    # Asynchronously fetch a random word from the database
+    words = await sync_to_async(list)(Word.objects.all())
+    return choice(words) if words else None
 
 # Словарь для отслеживания состояний пользователей
 user_states = {}
 
 
-@dp.message(Command(commands=["start"]))
+router = Router()
+
+@router.callback_query(lambda c: c.data == 'register')
+async def process_register_callback(callback_query: types.CallbackQuery):
+    await bot.answer_callback_query(callback_query.id)
+    await bot.send_message(callback_query.from_user.id, "Регистрация прошла успешно!")
+
+@router.callback_query(lambda c: c.data == 'enter_word')
+async def process_enter_word_callback(callback_query: types.CallbackQuery):
+    await bot.answer_callback_query(callback_query.id)
+    await bot.send_message(callback_query.from_user.id, "Введите слово для перевода:")
+
+@router.callback_query(lambda c: c.data == 'test')
+async def process_test_callback(callback_query: types.CallbackQuery):
+    await bot.answer_callback_query(callback_query.id)
+    await bot.send_message(callback_query.from_user.id, "Тестирование началось! \nОжидайте, тест загружается...")
+
+@router.callback_query(lambda c: c.data == 'settings')
+async def process_settings_callback(callback_query: types.CallbackQuery):
+    await bot.answer_callback_query(callback_query.id)
+    await bot.send_message(callback_query.from_user.id, "Настройка времени тестов.")
+
+@router.callback_query(lambda c: c.data == 'start_test')
+async def process_start_test_callback(callback_query: types.CallbackQuery):
+    await bot.answer_callback_query(callback_query.id)
+    await bot.send_message(callback_query.from_user.id, "Начинаем тест!")
+@router.message(Command(commands=["start"]))
 async def start_handler(message: Message):
     """Обработчик команды /start"""
     user_name = message.from_user.first_name or message.from_user.username or "Пользователь"
@@ -87,7 +129,17 @@ async def start_handler(message: Message):
         )
 
 
-@dp.message(Command(commands=["say"]))  # Remove state to follow new aiogram 3.x syntax
+@router.message(Command(commands=["test"]))
+async def handle_test(message: Message):
+    word = await get_random_word()
+    if word is None:
+        await message.answer("Нет доступных слов для теста.", reply_markup=main_menu_kb)
+        return
+
+    translated_word = translator.translate(word.text, src='en', dest='ru').text
+    await message.answer(f"Слово для перевода: {word.text}\nПеревод: {translated_word}", reply_markup=main_menu_kb)
+    # Создаем голосовое
+    await send_voice_from_text(bot, message, translated_word)
 async def say_handler(message: Message):
     print(f"/say command used with args: {message.get_args()}")
     """Обработчик команды /say [слово]"""
@@ -128,7 +180,7 @@ async def say_handler(message: Message):
 
 
 
-@dp.message()
+@router.message()
 async def handle_message(message: Message):
     if not message.text:
         await message.answer("Пожалуйста, отправьте текстовое сообщение.", reply_markup=main_menu_kb)

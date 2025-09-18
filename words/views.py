@@ -1,3 +1,11 @@
+def test_view(request):
+    words = Word.objects.all()
+    if words.exists():
+        word = random.choice(words)
+        return render(request, 'test_page.html', {'word': word.text})
+    else:
+        return render(request, 'test_page.html', {'message': 'No words available. Please add words first.'})
+
 # words/views.py
 from django.views.generic import (
     ListView,
@@ -11,6 +19,8 @@ from django.urls import reverse_lazy
 from gtts import gTTS
 from django.http import HttpResponse
 from django.shortcuts import render
+import random
+from .models import Word
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status

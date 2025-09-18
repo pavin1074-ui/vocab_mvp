@@ -25,15 +25,15 @@ async def main():
     """Основная функция запуска бота"""
     try:
         logger.info("Запуск VocabBot...")
-        
+
         # Проверяем наличие токена
         if not os.getenv("BOT_TOKEN"):
             logger.error("Ошибка: BOT_TOKEN не найден в .env файле")
             return
-            
+
         # Пробуем подключиться к API
         logger.info("Проверка подключения к Telegram API...")
-        
+
         try:
             # Простое получение инфо о боте
             bot_info = await bot.get_me()
@@ -42,11 +42,11 @@ async def main():
             logger.error(f"Не удалось подключиться к Telegram API: {conn_error}")
             logger.error("Проверьте интернет-соединение и токен")
             return
-        
+
         # Запускаем polling
         logger.info("Бот запущен и работает!")
         await dp.start_polling(bot, skip_updates=True)
-        
+
     except KeyboardInterrupt:
         logger.info("Бот остановлен пользователем")
     except Exception as e:

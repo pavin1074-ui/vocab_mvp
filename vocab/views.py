@@ -40,7 +40,8 @@ def test_view(request):
 
 
 def test_view(request):
-    word = choice(Word.objects.all())
+    words = Word.objects.all()
+    word = choice(words) if words.exists() else None
     return render(request, 'test_page.html', {'word': word})
 
 @api_view(['POST'])
