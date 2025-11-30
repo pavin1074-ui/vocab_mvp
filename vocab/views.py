@@ -4,10 +4,10 @@ from django.db.models import Count
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.http import HttpResponse
-from .models import TelegramUser, Card, Repetition
+from .models import TelegramUser, Card, Repetition, UserSettings
 from words.models import Word
 from .serializers import TelegramUserSerializer, CardSerializer
 from gtts import gTTS
@@ -110,57 +110,6 @@ class CardListCreateView(generics.ListCreateAPIView):
         serializer.save(owner=owner)
 
 
-# @login_required
-def progress_view(request):
-    # try:
-    #     telegram_user = request.user.telegramuser
-    # except TelegramUser.DoesNotExist:
-    #     return render(request, 'progress.html', {'error': 'Пользователь не найден.'})
-    """
-    Статистика по карточкам — без авторизации (для теста)
-    """
-    # Временно используем тестового TelegramUser
-    try:
-        telegram_user = TelegramUser.objects.get(telegram_id=12345)
-    except TelegramUser.DoesNotExist:
-        telegram_user = TelegramUser.objects.create(
-            telegram_id=12345,
-            username='test_user'
-        )
-
-    # Общая статистика
-    total_cards = Card.objects.filter(owner=telegram_user).count()
-    due_cards = Repetition.objects.filter(
-        card__owner=telegram_user,
-        next_review__lte=timezone.now()
-    ).count()
-
-    # По уровням сложности
-    difficulty_stats = Card.objects.filter(owner=telegram_user).values('difficulty').annotate(
-        count=Count('difficulty')
-    )
-
-    # Словарь для удобства
-    difficulty_labels = dict(Card.DIFFICULTY_CHOICES)
-    stats_by_level = {}
-    for item in difficulty_stats:
-        level = item['difficulty']
-        stats_by_level[level] = {
-            'label': difficulty_labels.get(level, level),
-            'count': item['count']
-        }
-
-    # Заполняем нули для отсутствующих уровней
-    for level_key, level_label in Card.DIFFICULTY_CHOICES:
-        if level_key not in stats_by_level:
-            stats_by_level[level_key] = {'label': level_label, 'count': 0}
-
-    return render(request, 'progress.html', {
-        'total_cards': total_cards,
-        'due_cards': due_cards,
-        'stats_by_level': stats_by_level,
-    })
-
 
 
 #@login_required
@@ -222,3 +171,84 @@ def review_view(request):
 
 
 
+def progress_view(request):
+    # временный тестовый пользователь
+    try:
+        telegram_user = TelegramUser.objects.get(telegram_id=12345)
+    except TelegramUser.DoesNotExist:
+        telegram_user = TelegramUser.objects.create(
+            telegram_id=12345,
+            username='test_user'
+        )
+
+    # читаем выбранную сложность из GET
+    difficulty = request.GET.get('difficulty')  # 'beginner' / 'intermediate' / 'advanced' или None
+
+    # базовый queryset карточек пользователя
+    cards_qs = Card.objects.filter(owner=telegram_user)
+
+    # если есть фильтр сложности — применяем
+    if difficulty in dict(Card.DIFFICULTY_CHOICES).keys():
+        cards_qs = cards_qs.filter(difficulty=difficulty)
+
+    # общая статистика по (отфильтрованным) карточкам
+    total_cards = cards_qs.count()
+
+    # слова для повторения — тоже по отфильтрованным карточкам
+    due_cards = Repetition.objects.filter(
+        card__in=cards_qs,
+        next_review__lte=timezone.now()
+    ).count()
+
+    # статистика по уровням сложности (из общего набора пользователя, чтобы блок "По уровням сложности"
+    # всегда показывал картину по всем уровням; если хочешь, можно тоже считать только по cards_qs)
+    difficulty_stats = Card.objects.filter(owner=telegram_user).values('difficulty').annotate(
+        count=Count('difficulty')
+    )
+
+    difficulty_labels = dict(Card.DIFFICULTY_CHOICES)
+    stats_by_level = {}
+    for item in difficulty_stats:
+        level = item['difficulty']
+        stats_by_level[level] = {
+            'label': difficulty_labels.get(level, level),
+            'count': item['count']
+        }
+
+    # заполняем нулями отсутствующие уровни
+    for level_key, level_label in Card.DIFFICULTY_CHOICES:
+        if level_key not in stats_by_level:
+            stats_by_level[level_key] = {'label': level_label, 'count': 0}
+
+    return render(request, 'progress.html', {
+        'total_cards': total_cards,
+        'due_cards': due_cards,
+        'stats_by_level': stats_by_level,
+        'current_difficulty': difficulty,  # чтобы в шаблоне подсветить активную кнопку, если захочешь
+    })
+
+
+def settings_view(request):
+    try:
+        telegram_user = TelegramUser.objects.get(telegram_id=12345)
+    except TelegramUser.DoesNotExist:
+        telegram_user = TelegramUser.objects.create(
+            telegram_id=12345,
+            username='test_user'
+        )
+
+    settings, _ = UserSettings.objects.get_or_create(user=telegram_user)
+
+    if request.method == 'POST':
+        settings.first_interval = int(request.POST.get('first_interval', settings.first_interval))
+        settings.second_interval = int(request.POST.get('second_interval', settings.second_interval))
+        settings.interval_multiplier = float(request.POST.get('interval_multiplier', settings.interval_multiplier))
+        settings.max_interval = int(request.POST.get('max_interval', settings.max_interval))
+        settings.min_easiness = float(request.POST.get('min_easiness', settings.min_easiness))
+        settings.save()
+        return HttpResponseRedirect(reverse('settings') + '?saved=1')
+
+    return render(request, 'settings.html', {
+        'settings': settings,
+        'saved': request.GET.get('saved')
+    })

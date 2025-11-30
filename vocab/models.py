@@ -2,14 +2,19 @@
 import random
 
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
-from django.db.models import signals
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.shortcuts import render
 from django.utils import timezone
+from .utils import get_word_difficulty
 
-from words.models import Word
+
+
+class SomeModel(models.Model):
+    word = models.ForeignKey('words.Word', on_delete=models.CASCADE)
+
 
 
 class TelegramUser(models.Model):
@@ -67,39 +72,72 @@ class Repetition(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
 
-
     def schedule_review(self, quality: int):
         """
-        SM-2 алгоритм
-        quality: 0-5 (0=полный провал, 5=отлично)
+        SM-2 с учётом пользовательских настроек.
+        quality: 0-5
         """
+        try:
+            settings = self.card.owner.settings
+        except ObjectDoesNotExist:
+            from .models import UserSettings
+            settings = UserSettings.objects.create(user=self.card.owner)
+
         if quality < 3:
-            # Неудача
-            self.interval = 1
+            self.interval = settings.first_interval
             self.repetitions = 0
         else:
-            # Успех
             if self.repetitions == 0:
-                self.interval = 1
+                self.interval = settings.first_interval
             elif self.repetitions == 1:
-                self.interval = 6
+                self.interval = settings.second_interval
             else:
-                self.interval = int(self.interval * self.easiness)
+                self.interval = int(self.interval * self.easiness * settings.interval_multiplier)
 
+            self.interval = min(self.interval, settings.max_interval)
             self.repetitions += 1
 
-        # Обновляем легкость
-        self.easiness = max(1.3, self.easiness + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02)))
+        self.easiness = max(
+            settings.min_easiness,
+            self.easiness + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02))
+        )
 
-        # Следующее повторение
         self.next_review = timezone.now() + timezone.timedelta(days=self.interval)
         self.review_count += 1
         self.last_result = quality >= 3
-
         self.save()
+
 
 def __str__(self):
     return f"{self.card.word}: след. повторение {self.next_review}"
+
+
+
+
+class UserSettings(models.Model):
+    user = models.OneToOneField(TelegramUser, on_delete=models.CASCADE, related_name='settings')
+
+    first_interval = models.IntegerField(default=1)     # первое повторение, дни
+    second_interval = models.IntegerField(default=6)    # второе повторение, дни
+    interval_multiplier = models.FloatField(default=1.0)
+    max_interval = models.IntegerField(default=365)
+    min_easiness = models.FloatField(default=1.3)
+
+
+    # Голос для озвучки
+    voice_gender = models.CharField(
+        max_length=10,
+        choices=(('female', 'Женский'), ('male', 'Мужской')),
+        default='female',
+    )
+
+    # сюда же можно позже добавить интервалы SM-2 и др.
+
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Настройки {self.user}"
 
 
 
@@ -118,6 +156,24 @@ def create_repetition(sender, instance, created, **kwargs):
                 'last_result': True
             }
         )
+
+
+@receiver(post_save, sender='words.Word')
+def create_card_for_word(sender, instance, created, **kwargs):
+    if created:
+        # Найди или создай тестового пользователя
+        telegram_user, _ = TelegramUser.objects.get_or_create(
+            telegram_id=12345,
+            defaults={'username': 'test_user'}
+        )
+        difficulty = get_word_difficulty(instance.text)
+        Card.objects.get_or_create(
+            owner=telegram_user,
+            word=instance.text,
+            translation=instance.translation,
+            defaults={'difficulty': difficulty}
+        )
+
 
 
 

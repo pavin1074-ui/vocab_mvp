@@ -14,6 +14,7 @@ urlpatterns = [
     path('progress/', views.progress_view, name='progress'),
     path('review/', views.review_view, name='review'),  # ← Добавь эту строку
     path('words/', include('words.urls')),  # Маршруты из words
+    path('settings/', views.settings_view, name='settings'),
 ]
 
 

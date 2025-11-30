@@ -32,3 +32,14 @@ def sm2(repetition, grade):
         repetition.easiness = 1.3
     repetition.next_review = datetime.now() + timedelta(days=repetition.interval)
     repetition.save()
+
+
+
+def get_word_difficulty(word: str) -> str:
+    w = word.strip().lower()
+    if len(w) <= 4:
+        return 'beginner'
+    elif len(w) <= 7:
+        return 'intermediate'
+    else:
+        return 'advanced'

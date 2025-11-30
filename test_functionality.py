@@ -71,7 +71,8 @@ def test_database():
     """Тестируем базу данных"""
     print("\n🗄️ Тестируем базу данных...")
     try:
-        from vocab.models import TelegramUser, Word
+        from vocab.models import TelegramUser
+        from words.models import Word
         from django.utils import timezone
         
         # Создаем тестового пользователя

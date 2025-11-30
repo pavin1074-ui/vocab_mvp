@@ -1,6 +1,8 @@
 # vocab/admin.py
 from django.contrib import admin
-from .models import TelegramUser, Card, Repetition, Word
+from .models import TelegramUser, Card, Repetition
+from words.models import Word
+
 
 # Регистрируем модели
 admin.site.register(TelegramUser)

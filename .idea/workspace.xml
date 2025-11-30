@@ -13,13 +13,28 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="HTML File" />
         <option value="Python Script" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;PAVIN7410&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/PAVIN7410/vocab_mvp.git&quot;,
+    &quot;accountId&quot;: &quot;767e4b38-3d78-4946-960c-758a20c0308b&quot;
+  }
+}</component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
@@ -31,29 +46,35 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
-    &quot;Python.Run Telegram Bot.executor&quot;: &quot;Run&quot;,
-    &quot;Python.settings.executor&quot;: &quot;Run&quot;,
-    &quot;Python.tasks.executor&quot;: &quot;Run&quot;,
-    &quot;Python.telegram_bot (1).executor&quot;: &quot;Run&quot;,
-    &quot;Python.telegram_bot.executor&quot;: &quot;Run&quot;,
-    &quot;Python.views.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultHtmlFileTemplate": "HTML File",
+    "Python.Run Telegram Bot.executor": "Run",
+    "Python.python bot\\telegram_bot.py (1).executor": "Run",
+    "Python.python bot\\telegram_bot.py.executor": "Run",
+    "Python.python manage.py runserver.executor": "Run",
+    "Python.settings.executor": "Run",
+    "Python.tasks.executor": "Run",
+    "Python.telegram_bot (1).executor": "Run",
+    "Python.telegram_bot.executor": "Run",
+    "Python.test_functionality.executor": "Run",
+    "Python.views.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "master",
+    "last_opened_file_path": "C:/Users/Admin/PycharmProjects/PythonProject/vocab_mvp/vocab/apps.py",
+    "run.code.analysis.last.selected.profile": "pProject Default",
+    "service.view.auto.scroll.to.source": "true",
+    "settings.editor.selected.configurable": "settings.qodana"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;GitStage.ChangesTree.GroupingKeys&quot;: [
-      &quot;directory&quot;,
-      &quot;module&quot;,
-      &quot;repository&quot;
+  "keyToStringList": {
+    "GitStage.ChangesTree.GroupingKeys": [
+      "directory",
+      "module",
+      "repository"
     ]
   }
-}</component>
+}]]></component>
   <component name="RunDashboard">
     <option name="configurationTypes">
       <set>
@@ -62,7 +83,7 @@
     </option>
   </component>
   <component name="RunManager" selected="Python.telegram_bot (1)">
-    <configuration name="Run Telegram Bot" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="python bot\telegram_bot.py (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="vocab_mvp" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -75,16 +96,16 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="vocab_mvp.bot.telegram_bot" />
+      <option name="SCRIPT_NAME" value="bot/telegram_bot.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="true" />
+      <option name="MODULE_MODE" value="false" />
       <option name="REDIRECT_INPUT" value="false" />
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="settings" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="python bot\telegram_bot.py" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="vocab_mvp" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -93,11 +114,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/vocab" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/vocab/settings.py" />
+      <option name="SCRIPT_NAME" value="bot\telegram_bot.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -150,7 +171,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="views" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="test_functionality" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="vocab_mvp" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -159,11 +180,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/vocab" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/vocab/views.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test_functionality.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -173,19 +194,19 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.views" />
-      <item itemvalue="Python.Run Telegram Bot" />
-      <item itemvalue="Python.settings" />
+      <item itemvalue="Python.python bot\telegram_bot.py (1)" />
+      <item itemvalue="Python.python bot\telegram_bot.py" />
+      <item itemvalue="Python.test_functionality" />
       <item itemvalue="Python.telegram_bot (1)" />
       <item itemvalue="Python.telegram_bot" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.telegram_bot (1)" />
         <item itemvalue="Python.telegram_bot" />
-        <item itemvalue="Python.views" />
-        <item itemvalue="Python.Run Telegram Bot" />
-        <item itemvalue="Python.settings" />
+        <item itemvalue="Python.telegram_bot (1)" />
+        <item itemvalue="Python.python bot\telegram_bot.py (1)" />
+        <item itemvalue="Python.python bot\telegram_bot.py" />
+        <item itemvalue="Python.test_functionality" />
       </list>
     </recent_temporary>
   </component>
@@ -269,7 +290,15 @@
       <option name="project" value="LOCAL" />
       <updated>1763909164898</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Added settings page.">
+      <option name="closed" value="true" />
+      <created>1764261287580</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1764261287580</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -299,6 +328,7 @@
     <MESSAGE value="add new file" />
     <MESSAGE value="added a button line" />
     <MESSAGE value="Added voiceover to the word repetition page and added the Progress page." />
-    <option name="LAST_COMMIT_MESSAGE" value="Added voiceover to the word repetition page and added the Progress page." />
+    <MESSAGE value="Added settings page." />
+    <option name="LAST_COMMIT_MESSAGE" value="Added settings page." />
   </component>
 </project>
