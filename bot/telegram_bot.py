@@ -14,7 +14,6 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.types import Message
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram import Router
-from googletrans import Translator
 from asgiref.sync import sync_to_async
 
 # Загружаем .env
@@ -34,6 +33,7 @@ django.setup()
 # Django / модели (импорты после django.setup)
 from django.core.files import File
 from django.utils import timezone
+from vocab.gigachat_translate import gigachat_translate
 from vocab.models import TelegramUser, Card, Repetition, UserSettings
 from words.models import Word
 
@@ -98,7 +98,7 @@ main_menu_kb = types.InlineKeyboardMarkup(inline_keyboard=[
     [types.InlineKeyboardButton(text="⚙️ Настройки", callback_data="settings")]
 ])
 
-translator = Translator()
+
 
 # Словарь для отслеживания состояний пользователей
 user_states: dict = {}
@@ -130,7 +130,7 @@ async def handle_word_input(message: Message, text: str):
     try:
         raw_text = text.strip()
 
-        # Определяем язык по алфавиту (ru-RU / en-US)
+        # Детекция языка
         speech_lang = detect_language_from_text(raw_text)  # "ru-RU" или "en-US"
         if speech_lang == "ru-RU":
             detected_lang = "ru"
@@ -141,13 +141,11 @@ async def handle_word_input(message: Message, text: str):
             src_lang = "en"
             dest_lang = "ru"
 
-
-        translation = translator.translate(raw_text, src=src_lang, dest=dest_lang)
         word_text = raw_text
-        word_translation = translation.text
+        # перевод через GigaChat
+        word_translation = gigachat_translate(word_text, src=src_lang, dest=dest_lang)
         if not word_translation or not word_translation.strip():
             raise Exception("Пустой перевод")
-
 
     except Exception as e:
         await processing_msg.edit_text(

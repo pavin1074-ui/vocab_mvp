@@ -8,8 +8,7 @@ urlpatterns = [
     path('new/', RedirectView.as_view(url='/words/create/'), name='word-new'),  # /new/ → /create/
     path('create/', views.WordCreateView.as_view(), name='word-create'),
     path('<int:pk>/', views.WordDetailView.as_view(), name='word-detail'),
-    path('update/<int:pk>/', views.WordUpdateView.as_view(), name='word-update'),
-    path('delete/<int:pk>/', views.WordDeleteView.as_view(), name='word-delete'),
+
     path('test/', views.test_view, name='test'),
     path('translate/', views.translate_word, name='translate_word'),
     path('register/', views.register_user, name='register_user'),

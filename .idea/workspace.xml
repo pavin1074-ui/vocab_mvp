@@ -58,14 +58,16 @@
     "Python.telegram_bot (1).executor": "Run",
     "Python.telegram_bot.executor": "Run",
     "Python.test_functionality.executor": "Run",
+    "Python.test_translation_api.executor": "Run",
     "Python.views.executor": "Run",
+    "Python.voice.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "master",
-    "last_opened_file_path": "C:/Users/Admin/PycharmProjects/PythonProject/vocab_mvp/vocab/apps.py",
+    "last_opened_file_path": "C:/Users/Admin/PycharmProjects/PythonProject/vocab_mvp/vocab/views.py",
     "run.code.analysis.last.selected.profile": "pProject Default",
     "service.view.auto.scroll.to.source": "true",
-    "settings.editor.selected.configurable": "settings.qodana"
+    "settings.editor.selected.configurable": "preferences.pluginManager"
   },
   "keyToStringList": {
     "GitStage.ChangesTree.GroupingKeys": [
@@ -82,29 +84,7 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="Python.telegram_bot (1)">
-    <configuration name="python bot\telegram_bot.py (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="vocab_mvp" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="bot/telegram_bot.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Python.test_functionality">
     <configuration name="python bot\telegram_bot.py" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="vocab_mvp" />
       <option name="ENV_FILES" value="" />
@@ -119,28 +99,6 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="bot\telegram_bot.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="telegram_bot (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="vocab_mvp" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/bot" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/bot/telegram_bot.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -193,20 +151,64 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="test_translation_api" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="vocab_mvp" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test_translation_api.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="voice" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="vocab_mvp" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/bot" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/bot/voice.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <list>
-      <item itemvalue="Python.python bot\telegram_bot.py (1)" />
-      <item itemvalue="Python.python bot\telegram_bot.py" />
+      <item itemvalue="Python.voice" />
       <item itemvalue="Python.test_functionality" />
-      <item itemvalue="Python.telegram_bot (1)" />
+      <item itemvalue="Python.test_translation_api" />
+      <item itemvalue="Python.python bot\telegram_bot.py" />
       <item itemvalue="Python.telegram_bot" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.telegram_bot" />
-        <item itemvalue="Python.telegram_bot (1)" />
-        <item itemvalue="Python.python bot\telegram_bot.py (1)" />
-        <item itemvalue="Python.python bot\telegram_bot.py" />
         <item itemvalue="Python.test_functionality" />
+        <item itemvalue="Python.voice" />
+        <item itemvalue="Python.test_translation_api" />
+        <item itemvalue="Python.python bot\telegram_bot.py" />
+        <item itemvalue="Python.telegram_bot" />
       </list>
     </recent_temporary>
   </component>
@@ -298,7 +300,15 @@
       <option name="project" value="LOCAL" />
       <updated>1764261287580</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="An image has been added to the word being entered.">
+      <option name="closed" value="true" />
+      <created>1764533239089</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1764533239089</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -329,6 +339,7 @@
     <MESSAGE value="added a button line" />
     <MESSAGE value="Added voiceover to the word repetition page and added the Progress page." />
     <MESSAGE value="Added settings page." />
-    <option name="LAST_COMMIT_MESSAGE" value="Added settings page." />
+    <MESSAGE value="An image has been added to the word being entered." />
+    <option name="LAST_COMMIT_MESSAGE" value="An image has been added to the word being entered." />
   </component>
 </project>

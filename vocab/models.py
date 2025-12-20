@@ -42,6 +42,10 @@ class BotLog(models.Model):
 
 
 
+def card_image_upload_path(instance, filename):
+    return f"card_images/user_{instance.owner.id}/{filename}"
+
+
 class Card(models.Model):
     DIFFICULTY_CHOICES = (
         ('beginner', 'Начальный'),
@@ -55,7 +59,10 @@ class Card(models.Model):
     example = models.TextField(blank=True, null=True)
     note = models.TextField(blank=True, null=True)
     difficulty = models.CharField(max_length=20, choices=DIFFICULTY_CHOICES, default='beginner')
+    image = models.ImageField(upload_to=card_image_upload_path, null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
+
+
 
     def __str__(self):
         return f"{self.word} → {self.translation}"
@@ -156,6 +163,24 @@ def create_repetition(sender, instance, created, **kwargs):
                 'last_result': True
             }
         )
+        
+        # Генерируем картинку для карточки
+        if not instance.image:
+            try:
+                from bot.image_generator import generate_image_for_word, ImageGenerationError
+                from django.core.files import File
+                import os
+                
+                img_path = generate_image_for_word(instance.word)
+                
+                with open(img_path, "rb") as f:
+                    django_file = File(f, name=f"{instance.word}.png")
+                    instance.image.save(django_file.name, django_file, save=True)
+                
+                if os.path.exists(img_path):
+                    os.remove(img_path)
+            except (ImageGenerationError, Exception) as e:
+                print(f"Error generating image for card: {e}")
 
 
 @receiver(post_save, sender='words.Word')
@@ -174,6 +199,15 @@ def create_card_for_word(sender, instance, created, **kwargs):
             defaults={'difficulty': difficulty}
         )
 
+        image_file = None
+        if hasattr(card, "word_obj") and card.word_obj.image:
+            image_file = card.word_obj.image
+        elif card.image:
+            image_file = card.image  # старый fallback
+
+        if image_file:
+            path = image_file.path
+            # шлём через FSInputFile или показываем в вебе
 
 
 

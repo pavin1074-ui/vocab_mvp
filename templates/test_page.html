@@ -153,6 +153,11 @@
     
     {% if word %}
         <div class="word-card">
+
+            {% if word.image %}
+                <img src="{{ word.image.url }}" alt="{{ word.text }}" style="max-width: 300px; height: auto;">
+            {% endif %}
+
             <p>📖 Переведите слово:</p>
             <div class="word-text">{{ word.text }}</div>
 

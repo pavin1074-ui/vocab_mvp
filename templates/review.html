@@ -9,6 +9,11 @@
     <p style="color: red;">{{ error }}</p>
 {% else %}
     <div class="card">
+        {% if card.image %}
+            <div style="text-align: center; margin-bottom: 20px;">
+                <img src="{{ card.image.url }}" alt="{{ card.word }}" style="max-width: 300px; height: auto; border-radius: 8px;">
+            </div>
+        {% endif %}
         <p>
             <strong>Слово:</strong> {{ card.word }}
             <button type="button" class="btn-audio" onclick="playAudio('{{ card.word }}')">🔊</button>

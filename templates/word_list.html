@@ -9,9 +9,14 @@
         <div class="word-list">
         {% for word in words %}
             <div class="word-item">
+                {% if word.image %}
+                    <img src="{{ word.image.url }}" alt="{{ word.text }}" class="word-image">
+                {% endif %}
                 <div class="word-content">
                     <strong>{{ word.text }}</strong> — {{ word.translation }}
+
                     <br>
+
                     <small>Следующее повторение: {{ word.next_review|date:"d.m.Y H:i" }}</small>
                 </div>
                 <div class="word-actions">
@@ -37,6 +42,14 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 15px;
+        }
+        .word-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 5px;
+            flex-shrink: 0;
         }
         .word-content {
             flex-grow: 1;

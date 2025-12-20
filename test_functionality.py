@@ -120,7 +120,7 @@ def test_bot_imports():
         print("✅ Telegram бот импортируется успешно")
         
         # Проверяем, что все нужные компоненты импортированы
-        from bot.telegram_bot import main_menu_kb, translator
+        from bot.telegram_bot import main_menu_kb
         print("✅ Компоненты бота загружены")
         
         print("✅ Бот готов к запуску!")

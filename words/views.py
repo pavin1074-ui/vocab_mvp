@@ -21,10 +21,12 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.http import JsonResponse
-from googletrans import Translator
+
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
+from vocab.gigachat_translate import gigachat_translate
+import logging
 from vocab.models import TelegramUser
 
 def register_user(request):
@@ -106,130 +108,61 @@ class WordCreateView(CreateView):
         # Переводим автоматически, если перевод пустой
         if not form.instance.translation and form.instance.text:
             try:
-                translator = Translator()
-                translation = translator.translate(form.instance.text, src='en', dest='ru')
-                form.instance.translation = translation.text
+                form.instance.translation = gigachat_translate(
+                    form.instance.text,
+                    src="en",
+                    dest="ru",
+                )
             except Exception:
-                pass  # Если перевод не удался, оставляем как есть
-        
-        return super().form_valid(form)
+                pass
 
 
-class WordUpdateView(UpdateView):
-    model = Word
-    fields = ['text', 'translation']
-    template_name = 'word_form.html'
-    success_url = reverse_lazy('word-list')
-
-
-class WordDeleteView(DeleteView):
-    model = Word
-    success_url = '/words/'
-    template_name = 'word_confirm_delete.html'
 
 
 @csrf_exempt
 def translate_word(request):
-    """АPI endpoint для перевода слов"""
     if request.method != 'POST':
         return JsonResponse({'error': 'Only POST method allowed'}, status=405)
-    
+
     try:
-        # Парсим JSON данные
-        try:
-            data = json.loads(request.body)
-        except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON'}, status=400)
-            
-        text = data.get('text', '').strip()
-        
-        # Проверки
-        if not text:
-            return JsonResponse({'error': 'Text is required'}, status=400)
-            
-        if len(text) > 1000:
-            return JsonResponse({'error': 'Text too long (max 1000 characters)'}, status=400)
-            
-        if not any(c.isalpha() for c in text):
-            return JsonResponse({'error': 'Text should contain letters'}, status=400)
-        
-        print(f"[DEBUG] Translating text: '{text}'")  # Отладка
-        
-        translator = Translator()
-        
-        # Проверяем, содержит ли текст кириллицу
-        def has_cyrillic(text):
-            return bool([c for c in text if '\u0430' <= c.lower() <= '\u044f' or c.lower() in 'ёщ'])
-        
-        def has_latin(text):
-            return bool([c for c in text if 'a' <= c.lower() <= 'z'])
-        
-        # Определяем язык по алфавиту в первую очередь
-        is_cyrillic = has_cyrillic(text)
-        is_latin = has_latin(text)
-        
-        print(f"[DEBUG] Text analysis - Cyrillic: {is_cyrillic}, Latin: {is_latin}")
-        
-        # Определяем направление перевода
-        if is_cyrillic and not is_latin:
-            # Кириллица -> считаем русским -> переводим на английский
-            print(f"[DEBUG] Treating as Russian (Cyrillic detected)")
-            translation = translator.translate(text, src='ru', dest='en')
-        elif is_latin and not is_cyrillic:
-            # Латиница -> считаем английским -> переводим на русский
-            print(f"[DEBUG] Treating as English (Latin detected)")
-            translation = translator.translate(text, src='en', dest='ru')
-        else:
-            # Неопределенный случай -> используем Google автоопределение
-            print(f"[DEBUG] Using Google auto-detection as fallback")
-            detection = translator.detect(text)
-            detected_lang = detection.lang
-            print(f"[DEBUG] Google detected language: {detected_lang}")
-            
-            if detected_lang in ['ru', 'bg', 'uk']:  # славянские языки
-                translation = translator.translate(text, src='ru', dest='en')
-            elif detected_lang in ['en']:
-                translation = translator.translate(text, src='en', dest='ru')
-            else:
-                # По умолчанию переводим на русский
-                translation = translator.translate(text, dest='ru')
-        
-        if translation and translation.text:
-            result = {
-                'translation': translation.text,
-                'source_lang': translation.src,
-                'dest_lang': translation.dest
-            }
-            print(f"[DEBUG] Translation result: {result}")  # Отладка
-            return JsonResponse(result)
-        else:
-            return JsonResponse({'error': 'Translation returned empty result'}, status=500)
-            
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+
+    text = data.get('text', '').strip()
+    if not text:
+        return JsonResponse({'error': 'Text is required'}, status=400)
+
+    def has_cyrillic(t):
+        return any('а' <= c.lower() <= 'я' or c.lower() == 'ё' for c in t)
+
+    def has_latin(t):
+        return any('a' <= c.lower() <= 'z' for c in t)
+
+    is_cyrillic = has_cyrillic(text)
+    is_latin = has_latin(text)
+
+    if is_cyrillic and not is_latin:
+        src, dest = 'ru', 'en'
+    elif is_latin and not is_cyrillic:
+        src, dest = 'en', 'ru'
+    else:
+        src, dest = 'en', 'ru'
+
+    try:
+        translated = gigachat_translate(text, src=src, dest=dest)
     except Exception as e:
-        error_msg = str(e)
-        print(f"[ERROR] Translation failed: {error_msg}")  # Отладка
-        
-        # Пробуем альтернативный способ
-        try:
-            translator = Translator(service_urls=['translate.google.com', 'translate.google.co.kr'])
-            translation = translator.translate(text, src='auto', dest='ru')
-            return JsonResponse({
-                'translation': translation.text,
-                'source_lang': translation.src,
-                'dest_lang': translation.dest,
-                'note': 'Used fallback translation service'
-            })
-        except Exception as fallback_error:
-            print(f"[ERROR] Fallback translation also failed: {str(fallback_error)}")
-            return JsonResponse({
-                'error': f'Translation service unavailable: {error_msg}',
-                'fallback_error': str(fallback_error),
-                'suggestion': 'Please check your internet connection and try again'
-            }, status=500)
+        logger.exception("GigaChat translate failed")
+        return JsonResponse({'error': f'Translation failed: {e}'}, status=500)
+
+    return JsonResponse({
+        'translation': translated,
+        'source_lang': src,
+        'dest_lang': dest,
+    })
 
 
 
-logger = logging.getLogger(__name__)
 
 def generate_audio(request, pk, text_type='word'):
     word = get_object_or_404(Word, pk=pk)
