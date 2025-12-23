@@ -13,8 +13,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Python Script" />
         <option value="HTML File" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
@@ -50,6 +50,8 @@
   "keyToString": {
     "DefaultHtmlFileTemplate": "HTML File",
     "Python.Run Telegram Bot.executor": "Run",
+    "Python.decode_auth.executor": "Run",
+    "Python.gigachat_utils.executor": "Run",
     "Python.python bot\\telegram_bot.py (1).executor": "Run",
     "Python.python bot\\telegram_bot.py.executor": "Run",
     "Python.python manage.py runserver.executor": "Run",
@@ -58,13 +60,17 @@
     "Python.telegram_bot (1).executor": "Run",
     "Python.telegram_bot.executor": "Run",
     "Python.test_functionality.executor": "Run",
+    "Python.test_gigachat.executor": "Run",
+    "Python.test_internet.executor": "Run",
+    "Python.test_t_gigachat.executor": "Run",
+    "Python.test_token.executor": "Run",
     "Python.test_translation_api.executor": "Run",
     "Python.views.executor": "Run",
     "Python.voice.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "master",
-    "last_opened_file_path": "C:/Users/Admin/PycharmProjects/PythonProject/vocab_mvp/vocab/views.py",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "C:/Users/Admin/PycharmProjects/PythonProject/vocab_mvp/words/views.py",
     "run.code.analysis.last.selected.profile": "pProject Default",
     "service.view.auto.scroll.to.source": "true",
     "settings.editor.selected.configurable": "preferences.pluginManager"
@@ -84,8 +90,30 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="Python.test_functionality">
-    <configuration name="python bot\telegram_bot.py" type="PythonConfigurationType" factoryName="Python" temporary="true">
+  <component name="RunManager" selected="Python.test_t_gigachat">
+    <configuration name="gigachat_utils" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="vocab_mvp" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/words" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/words/gigachat_utils.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="test_gigachat" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="vocab_mvp" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -98,7 +126,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="bot\telegram_bot.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test_gigachat.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -107,29 +135,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="telegram_bot" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="vocab_mvp" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Bot" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Bot/telegram_bot.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="test_functionality" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="test_internet" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="vocab_mvp" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -142,7 +148,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test_functionality.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test_internet.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -151,7 +157,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="test_translation_api" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="test_t_gigachat" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="vocab_mvp" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -164,7 +170,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test_translation_api.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test_t_gigachat.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -173,7 +179,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="voice" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="test_token" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="vocab_mvp" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -182,11 +188,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/bot" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/bot/voice.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test_token.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -196,19 +202,19 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.voice" />
-      <item itemvalue="Python.test_functionality" />
-      <item itemvalue="Python.test_translation_api" />
-      <item itemvalue="Python.python bot\telegram_bot.py" />
-      <item itemvalue="Python.telegram_bot" />
+      <item itemvalue="Python.gigachat_utils" />
+      <item itemvalue="Python.test_gigachat" />
+      <item itemvalue="Python.test_internet" />
+      <item itemvalue="Python.test_t_gigachat" />
+      <item itemvalue="Python.test_token" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.test_functionality" />
-        <item itemvalue="Python.voice" />
-        <item itemvalue="Python.test_translation_api" />
-        <item itemvalue="Python.python bot\telegram_bot.py" />
-        <item itemvalue="Python.telegram_bot" />
+        <item itemvalue="Python.test_t_gigachat" />
+        <item itemvalue="Python.test_token" />
+        <item itemvalue="Python.gigachat_utils" />
+        <item itemvalue="Python.test_internet" />
+        <item itemvalue="Python.test_gigachat" />
       </list>
     </recent_temporary>
   </component>

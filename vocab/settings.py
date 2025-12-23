@@ -11,7 +11,16 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
+
+
+load_dotenv()
+
+# GigaChat API
+GIGACHAT_CLIENT_ID = os.getenv('GIGACHAT_CLIENT_ID')
+GIGACHAT_CLIENT_SECRET = os.getenv('GIGACHAT_CLIENT_SECRET')
+GIGACHAT_AUTH_KEY = os.getenv('GIGACHAT_AUTH_KEY')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -19,11 +28,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
-
-
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
-
 
 
 # Quick-start development settings - unsuitable for production
@@ -130,6 +134,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -142,7 +148,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 from vocab.celery import app as celery_app
 
 # Устанавливаем модуль настроек по умолчанию
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'vocab.settings')
+#os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'vocab.settings')
 
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'

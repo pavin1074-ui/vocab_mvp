@@ -108,14 +108,21 @@ class WordCreateView(CreateView):
         # Переводим автоматически, если перевод пустой
         if not form.instance.translation and form.instance.text:
             try:
+                # Добавим логирование
+                from vocab.gigachat_translate import gigachat_translate
+                print(f"🔄 Пытаемся перевести: {form.instance.text}")
                 form.instance.translation = gigachat_translate(
                     form.instance.text,
                     src="en",
                     dest="ru",
                 )
-            except Exception:
+                print(f"✅ Перевод успешен: {form.instance.translation}")
+            except Exception as e:
+                print(f"❌ Ошибка перевода: {e}")
+                # Не ломаем форму — просто не ставим перевод
                 pass
 
+        return super().form_valid(form)
 
 
 
