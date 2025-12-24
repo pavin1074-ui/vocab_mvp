@@ -19,7 +19,6 @@ __pycache__/
 # DB, logs, env
 db.sqlite3
 *.log
-.env
 bot.log
 *.pyc
 *.pyo

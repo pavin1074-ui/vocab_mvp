@@ -46,43 +46,43 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "DefaultHtmlFileTemplate": "HTML File",
-    "Python.Run Telegram Bot.executor": "Run",
-    "Python.decode_auth.executor": "Run",
-    "Python.gigachat_utils.executor": "Run",
-    "Python.python bot\\telegram_bot.py (1).executor": "Run",
-    "Python.python bot\\telegram_bot.py.executor": "Run",
-    "Python.python manage.py runserver.executor": "Run",
-    "Python.settings.executor": "Run",
-    "Python.tasks.executor": "Run",
-    "Python.telegram_bot (1).executor": "Run",
-    "Python.telegram_bot.executor": "Run",
-    "Python.test_functionality.executor": "Run",
-    "Python.test_gigachat.executor": "Run",
-    "Python.test_internet.executor": "Run",
-    "Python.test_t_gigachat.executor": "Run",
-    "Python.test_token.executor": "Run",
-    "Python.test_translation_api.executor": "Run",
-    "Python.views.executor": "Run",
-    "Python.voice.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "C:/Users/Admin/PycharmProjects/PythonProject/vocab_mvp/words/views.py",
-    "run.code.analysis.last.selected.profile": "pProject Default",
-    "service.view.auto.scroll.to.source": "true",
-    "settings.editor.selected.configurable": "preferences.pluginManager"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;Python.Run Telegram Bot.executor&quot;: &quot;Run&quot;,
+    &quot;Python.decode_auth.executor&quot;: &quot;Run&quot;,
+    &quot;Python.gigachat_utils.executor&quot;: &quot;Run&quot;,
+    &quot;Python.python bot\\telegram_bot.py (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.python bot\\telegram_bot.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python.python manage.py runserver.executor&quot;: &quot;Run&quot;,
+    &quot;Python.settings.executor&quot;: &quot;Run&quot;,
+    &quot;Python.tasks.executor&quot;: &quot;Run&quot;,
+    &quot;Python.telegram_bot (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.telegram_bot.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test_functionality.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test_gigachat.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test_internet.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test_t_gigachat.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test_token.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test_translation_api.executor&quot;: &quot;Run&quot;,
+    &quot;Python.views.executor&quot;: &quot;Run&quot;,
+    &quot;Python.voice.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Admin/PycharmProjects/PythonProject/vocab_mvp/words/views.py&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
+    &quot;service.view.auto.scroll.to.source&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
   },
-  "keyToStringList": {
-    "GitStage.ChangesTree.GroupingKeys": [
-      "directory",
-      "module",
-      "repository"
+  &quot;keyToStringList&quot;: {
+    &quot;GitStage.ChangesTree.GroupingKeys&quot;: [
+      &quot;directory&quot;,
+      &quot;module&quot;,
+      &quot;repository&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RunDashboard">
     <option name="configurationTypes">
       <set>
@@ -314,7 +314,15 @@
       <option name="project" value="LOCAL" />
       <updated>1764533239089</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Переделал">
+      <option name="closed" value="true" />
+      <created>1766516902515</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1766516902515</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -346,6 +354,7 @@
     <MESSAGE value="Added voiceover to the word repetition page and added the Progress page." />
     <MESSAGE value="Added settings page." />
     <MESSAGE value="An image has been added to the word being entered." />
-    <option name="LAST_COMMIT_MESSAGE" value="An image has been added to the word being entered." />
+    <MESSAGE value="Переделал" />
+    <option name="LAST_COMMIT_MESSAGE" value="Переделал" />
   </component>
 </project>
