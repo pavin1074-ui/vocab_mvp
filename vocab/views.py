@@ -1,25 +1,21 @@
 # vocab/views.py
-from django.shortcuts import render, get_object_or_404
-from django.db.models import Count
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect
-from django.urls import reverse
-from django.shortcuts import render, redirect
-from django.utils import timezone
-from django.http import HttpResponse
-from .models import TelegramUser, Card, Repetition, UserSettings
-from words.models import Word
-from .serializers import TelegramUserSerializer, CardSerializer
-from gtts import gTTS
-from random import choice
-from rest_framework import generics, status
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
-from django.contrib.auth.models import User
 import logging
-from io import BytesIO
 import re
+from random import choice
+
+from django.db.models import Count
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
+from django.urls import reverse
+from django.utils import timezone
+from rest_framework import generics, status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from words.models import Word
+from .models import TelegramUser, Card, Repetition, UserSettings
+from .serializers import CardSerializer
 
 # Настройка логирования
 

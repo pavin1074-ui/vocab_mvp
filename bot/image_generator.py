@@ -1,11 +1,14 @@
-#image_generator.py
-import os
+# image_generator.py
+
 import tempfile
-import requests
-from dotenv import load_dotenv
 from urllib.parse import quote
 
+import requests
+from dotenv import load_dotenv
+
 load_dotenv()
+
+
 class ImageGenerationError(Exception):
     pass
 
@@ -43,3 +46,19 @@ def generate_image_for_word(prompt: str, width: int = 512, height: int = 512) ->
             
     except requests.RequestException as e:
         raise ImageGenerationError(f"Network error: {str(e)}")
+
+
+
+
+
+    # пример кода
+# from PIL import Image
+#
+# # Открыть изображение
+# img = Image.open("cat.jpg")
+#
+# # Уменьшить
+# img.thumbnail((300, 300))
+#
+# # Сохранить
+# img.save("cat_thumb.jpg")

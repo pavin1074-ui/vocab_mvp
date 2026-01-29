@@ -1,6 +1,11 @@
 #vocab/utils.py:
 
 import requests
+from deep_translator import GoogleTranslator
+
+def universal_translate(text, src='en', dest='ru'):
+    return GoogleTranslator(source=src, target=dest).translate(text)
+
 
 DJANGO_API_URL = "http://127.0.0.1:8000/api/"  # пример, поправь под свой
 

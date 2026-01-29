@@ -1,7 +1,8 @@
 from django.test import TestCase, Client
 from django.urls import reverse
-from django.utils import timezone
+
 from vocab.models import TelegramUser, Word
+
 
 class WordCreationTest(TestCase):
     def setUp(self):

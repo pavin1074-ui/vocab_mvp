@@ -8,4 +8,4 @@ class VocabConfig(AppConfig):
 
     def ready(self):
         # Это заставит Django загрузить models.py и зарегистрировать сигналы
-        import vocab.models
+        pass

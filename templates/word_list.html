@@ -17,7 +17,7 @@
 
                     <br>
 
-                    <small>Следующее повторение: {{ word.next_review|date:"d.m.Y H:i" }}</small>
+                    <small>Следующее повторение: {{word.next_review|date:"d.m.Y H:i"}}</small>
                 </div>
                 <div class="word-actions">
                     <a href="{% url 'word-detail' word.pk %}" class="btn">просмотр</a>

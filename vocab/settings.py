@@ -11,16 +11,12 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 import os
 from pathlib import Path
+
 from dotenv import load_dotenv
-
-
 
 load_dotenv()
 
-# GigaChat API
-GIGACHAT_CLIENT_ID = os.getenv('GIGACHAT_CLIENT_ID')
-GIGACHAT_CLIENT_SECRET = os.getenv('GIGACHAT_CLIENT_SECRET')
-GIGACHAT_AUTH_KEY = os.getenv('GIGACHAT_AUTH_KEY')
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -95,6 +91,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+        'OPTIONS': {
+            'timeout': 20,  # Ждать до 20 секунд
+        },
     }
 }
 
@@ -144,8 +143,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # Celery settings
-
-from vocab.celery import app as celery_app
 
 # Устанавливаем модуль настроек по умолчанию
 #os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'vocab.settings')

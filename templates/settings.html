@@ -36,13 +36,15 @@
     </div>
 
     <!-- НОВОЕ: выбор голоса -->
-    <div class="form-group">
-        <label>Голос озвучки:</label>
-        <select name="voice_gender" class="form-control">
-            <option value="female" {% if settings.voice_gender == 'female' %}selected{% endif %}>Женский</option>
-            <option value="male" {% if settings.voice_gender == 'male' %}selected{% endif %}>Мужской</option>
-        </select>
-    </div>
+<!-- Исправленный шаблон: пробелы вокруг оператора == -->
+
+<div class="form-group">
+    <label>Голос озвучки:</label>
+    <select name="voice_gender" class="form-control">
+        <option value="female" {% if settings.voice_gender == 'female' %}selected{% endif %}>Женский</option>
+        <option value="male" {% if settings.voice_gender == 'male' %}selected{% endif %}>Мужской</option>
+    </select>
+</div>
 
     <button type="submit" class="btn btn-primary">Сохранить</button>
 </form>

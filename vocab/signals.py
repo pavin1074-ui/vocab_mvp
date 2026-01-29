@@ -1,8 +1,10 @@
 # vocab/signals.py
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+
 from words.models import Word
 from .models import Card, TelegramUser  # ← Это нормально, если не в models.py
+
 
 @receiver(post_save, sender=Word)
 def create_card_for_word(sender, instance, created, **kwargs):

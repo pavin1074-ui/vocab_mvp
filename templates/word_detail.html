@@ -12,7 +12,7 @@
     
     <div class="word-details">
         <div class="detail-item">
-            <strong>Слово:</strong> {{ word.text }}
+            <strong>Слово:</strong> {{word.text}}
             <div class="audio-controls">
                 <button onclick="playAudio({{ word.pk }}, 'word')" class="btn btn-audio" title="Прослушать произношение">🔊</button>
                 <a href="/words/{{ word.pk }}/audio/?type=word&lang=en" class="btn btn-sm" download>⬇️</a>
@@ -20,7 +20,7 @@
         </div>
         
         <div class="detail-item">
-            <strong>Перевод:</strong> {{ word.translation }}
+            <strong>Перевод:</strong> {{word.translation}}
             <div class="audio-controls">
                 <button onclick="playAudio({{ word.pk }}, 'translation')" class="btn btn-audio" title="Прослушать перевод">🔊</button>
                 <a href="/words/{{ word.pk }}/audio/?type=translation&lang=ru" class="btn btn-sm" download>⬇️</a>
@@ -28,7 +28,7 @@
         </div>
         
         <div class="detail-item">
-            <strong>Следующее повторение:</strong> {{ word.next_review|date:"d.m.Y H:i" }}
+            <strong>Следующее повторение:</strong> {{word.next_review|date:"d.m.Y H:i"}}
         </div>
     </div>
     

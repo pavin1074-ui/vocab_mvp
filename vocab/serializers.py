@@ -1,7 +1,9 @@
 #vocab/serializers.py:
 
 from rest_framework import serializers
+
 from .models import TelegramUser, Card, Repetition
+
 
 class TelegramUserSerializer(serializers.ModelSerializer):
     class Meta:

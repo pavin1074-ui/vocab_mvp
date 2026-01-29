@@ -1,5 +1,18 @@
-### words/views.py
+# words/views.py
 import io
+import json
+import logging
+import random
+from io import BytesIO
+
+from django.http import HttpResponse
+from django.http import HttpResponseRedirect
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from django.shortcuts import render
+from django.urls import reverse
+from django.urls import reverse_lazy
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import (
     ListView,
     DetailView,
@@ -7,27 +20,17 @@ from django.views.generic import (
     UpdateView,
     DeleteView
 )
-from django.shortcuts import get_object_or_404
-from io import BytesIO
-import logging
-from .models import Word
-from django.urls import reverse_lazy
 from gtts import gTTS
-from django.http import HttpResponse
-from django.shortcuts import render
-import random
-from .models import Word
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework import status
-from django.http import JsonResponse
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-import json
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
-from vocab.gigachat_translate import gigachat_translate
-import logging
+from vocab.deep_translate import GoogleTranslator
 from vocab.models import TelegramUser
+from .models import Word
+
+logger = logging.getLogger(__name__)
+
 
 def register_user(request):
     if request.method == 'POST':
@@ -47,14 +50,48 @@ def register_user(request):
 
 
 def test_view(request):
+    # Получаем все слова
     words = Word.objects.all()
-    if words.exists():
-        word = random.choice(words)
-        return render(request, 'test_page.html', {'word': word.text})
-    else:
+    if not words.exists():
         return render(request, 'test_page.html', {'message': 'No words available. Please add words first.'})
 
+    result = None
+    previous_word = None
+    previous_word_id = None
+    correct_translation = None
+    user_translation = None
 
+    # Обработка ответа пользователя
+    if request.method == 'POST':
+        word_id = request.POST.get('word_id')
+        user_translation = request.POST.get('translation', '').strip().lower()
+
+        # Находим слово, которое проверяли
+        prev_word_obj = get_object_or_404(Word, id=word_id)
+        correct_answer = prev_word_obj.translation.strip().lower()
+
+        previous_word = prev_word_obj.text
+        previous_word_id = prev_word_obj.id
+        correct_translation = prev_word_obj.translation
+
+        if user_translation == correct_answer:
+            result = 'correct'
+        else:
+            result = 'incorrect'
+
+    # Выбираем НОВОЕ слово для следующего раунда
+    current_word = random.choice(words)
+
+    context = {
+        'word': current_word,
+        'result': result,
+        'previous_word': previous_word,
+        'previous_word_id': previous_word_id,
+        'correct_translation': correct_translation,
+        'user_translation': user_translation,
+    }
+
+    return render(request, 'test_page.html', context)
 
 
 
@@ -97,33 +134,51 @@ class WordCreateView(CreateView):
     success_url = reverse_lazy('word-list')
     
     def form_valid(self, form):
-        # Получаем или создаем тестового пользователя
-        from vocab.models import TelegramUser
-        test_user, created = TelegramUser.objects.get_or_create(
-            telegram_id=12345,  # Тестовый ID
+        # 1. Импортируем модель (убедитесь, что имя НЕ совпадает с переменной ниже)
+        from vocab.models import TelegramUser as TelegramUserModel
+
+        # 2. Получаем ОБЪЕКТ (экземпляр), а не класс
+        # get_or_create возвращает кортеж (объект, создано_ли_оно)
+        user_instance, _ = TelegramUserModel.objects.get_or_create(
+            telegram_id=12345,
             defaults={'username': 'test_user'}
         )
-        form.instance.user = test_user
-        
-        # Переводим автоматически, если перевод пустой
+
+        # 3. Присваиваем именно ОБЪЕКТ экземпляру слова
+        form.instance.user = user_instance
+
+        # 4. Логика перевода
         if not form.instance.translation and form.instance.text:
             try:
-                # Добавим логирование
-                from vocab.gigachat_translate import gigachat_translate
-                print(f"🔄 Пытаемся перевести: {form.instance.text}")
-                form.instance.translation = gigachat_translate(
-                    form.instance.text,
-                    src="en",
-                    dest="ru",
-                )
-                print(f"✅ Перевод успешен: {form.instance.translation}")
+                from deep_translator import GoogleTranslator
+                translated = GoogleTranslator(source='en', target='ru').translate(form.instance.text)
+                if translated:
+                    form.instance.translation = str(translated)
             except Exception as e:
-                print(f"❌ Ошибка перевода: {e}")
-                # Не ломаем форму — просто не ставим перевод
-                pass
+                print(f"Translation error: {e}")
 
+        # 5. Сохраняем
         return super().form_valid(form)
 
+
+
+# --- Добавляем UpdateView ---
+class WordUpdateView(UpdateView):
+    model = Word
+    fields = ['text', 'translation']
+    template_name = 'word_form.html'
+    success_url = reverse_lazy('word-list')
+
+#     def form_valid(self, form):
+#         # Сохраняем без изменений пользователя
+#         return super().form_valid(form)
+
+
+# --- Добавляем DeleteView ---
+class WordDeleteView(DeleteView):
+    model = Word
+    template_name = 'word_confirm_delete.html'
+    success_url = reverse_lazy('word-list')
 
 
 @csrf_exempt
@@ -157,10 +212,12 @@ def translate_word(request):
         src, dest = 'en', 'ru'
 
     try:
-        translated = gigachat_translate(text, src=src, dest=dest)
+        # Используем GoogleTranslator вместо гигачата
+        translated = GoogleTranslator(source=src, target=dest).translate(text)
     except Exception as e:
-        logger.exception("GigaChat translate failed")
+        logger.exception("Deep Translate failed")
         return JsonResponse({'error': f'Translation failed: {e}'}, status=500)
+
 
     return JsonResponse({
         'translation': translated,
@@ -241,3 +298,28 @@ def speak_text(request):
         return HttpResponse(status=500)
 
 
+def settings_view(request):
+    try:
+        telegram_user = TelegramUser.objects.get(telegram_id=12345)
+    except TelegramUser.DoesNotExist:
+        telegram_user = TelegramUser.objects.create(
+            telegram_id=12345,
+            username='test_user'
+        )
+
+    settings, _ = UserSettings.objects.get_or_create(user=telegram_user)
+
+    if request.method == 'POST':
+        settings.first_interval = int(request.POST.get('first_interval', settings.first_interval))
+        settings.second_interval = int(request.POST.get('second_interval', settings.second_interval))
+        settings.interval_multiplier = float(request.POST.get('interval_multiplier', settings.interval_multiplier))
+        settings.max_interval = int(request.POST.get('max_interval', settings.max_interval))
+        settings.min_easiness = float(request.POST.get('min_easiness', settings.min_easiness))
+        settings.voice_gender = request.POST.get('voice_gender', settings.voice_gender)  # Сохраняем выбор голоса
+        settings.save()
+        return HttpResponseRedirect(reverse('settings') + '?saved=1')
+
+    return render(request, 'settings.html', {
+        'settings': settings,
+        'saved': request.GET.get('saved')
+    })

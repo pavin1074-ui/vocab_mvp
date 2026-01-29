@@ -4,7 +4,43 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1eb2edee-ec67-46b4-ba3c-e7a6ac086285" name="Changes" comment="" />
+    <list default="true" id="1eb2edee-ec67-46b4-ba3c-e7a6ac086285" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/vocab/deep_translate.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/image_generator.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/image_generator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/telegram_bot.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/telegram_bot.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/utilis.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/utilis.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot/voice.py" beforeDir="false" afterPath="$PROJECT_DIR$/bot/voice.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/db.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/media/card_images/user_1/Селёдка..png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/progress.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/progress.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/review.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/review.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/settings.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/settings.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/test_page.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/test_page.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/word_confirm_delete.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/word_confirm_delete.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/word_detail.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/word_detail.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/templates/word_list.html" beforeDir="false" afterPath="$PROJECT_DIR$/templates/word_list.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_gigachat.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_gigachat.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vocab/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vocab/gigachat_translate.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vocab/migrations/0001_initial.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vocab/migrations/0002_usersettings.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vocab/migrations/0003_usersettings_voice_gender.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vocab/migrations/0004_somemodel.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vocab/migrations/0005_card_image.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/vocab/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/vocab/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vocab/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/vocab/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vocab/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/vocab/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/words/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/words/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/words/gigachat_client.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/words/gigachat_utils.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/words/migrations/0001_initial.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/words/migrations/0002_word_image_alter_word_user.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/words/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/words/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/words/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/words/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/words/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/words/views.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -41,7 +77,6 @@
   &quot;associatedIndex&quot;: 0
 }</component>
   <component name="ProjectId" id="30K6F3kLaqY3Kbfe7Um1yiex1uV" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -68,12 +103,16 @@
     &quot;Python.views.executor&quot;: &quot;Run&quot;,
     &quot;Python.voice.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/Admin/PycharmProjects/PythonProject/vocab_mvp/words/views.py&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Admin/PycharmProjects/PythonProject/vocab_mvp&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
     &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
     &quot;service.view.auto.scroll.to.source&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
+    &quot;settings.editor.selected.configurable&quot;: &quot;org.intellij.sdk.settings.AppSettingsConfigurable&quot;
   },
   &quot;keyToStringList&quot;: {
     &quot;GitStage.ChangesTree.GroupingKeys&quot;: [
@@ -90,7 +129,7 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="Python.test_t_gigachat">
+  <component name="RunManager" selected="Python.gigachat_utils">
     <configuration name="gigachat_utils" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="vocab_mvp" />
       <option name="ENV_FILES" value="" />
@@ -201,22 +240,6 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <list>
-      <item itemvalue="Python.gigachat_utils" />
-      <item itemvalue="Python.test_gigachat" />
-      <item itemvalue="Python.test_internet" />
-      <item itemvalue="Python.test_t_gigachat" />
-      <item itemvalue="Python.test_token" />
-    </list>
-    <recent_temporary>
-      <list>
-        <item itemvalue="Python.test_t_gigachat" />
-        <item itemvalue="Python.test_token" />
-        <item itemvalue="Python.gigachat_utils" />
-        <item itemvalue="Python.test_internet" />
-        <item itemvalue="Python.test_gigachat" />
-      </list>
-    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -346,7 +369,15 @@
       <option name="project" value="LOCAL" />
       <updated>1766585630378</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="Remove .env from index">
+      <option name="closed" value="true" />
+      <created>1766593657146</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1766593657146</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -380,6 +411,7 @@
     <MESSAGE value="An image has been added to the word being entered." />
     <MESSAGE value="Переделал" />
     <MESSAGE value="Initial commit" />
-    <option name="LAST_COMMIT_MESSAGE" value="Initial commit" />
+    <MESSAGE value="Remove .env from index" />
+    <option name="LAST_COMMIT_MESSAGE" value="Remove .env from index" />
   </component>
 </project>

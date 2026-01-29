@@ -1,8 +1,10 @@
 #vocab/tasks.py:
+import requests
+from django.utils import timezone
+
 from celery import shared_task
 from .models import Repetition
-from django.utils import timezone
-import requests
+
 
 @shared_task
 def send_review_notifications():

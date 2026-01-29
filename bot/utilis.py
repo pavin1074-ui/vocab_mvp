@@ -1,9 +1,11 @@
 # bot/utilis.py
 import os
+
 import requests
 
 # Убедимся, что переменная окружения есть
 DJANGO_API_URL = os.getenv("DJANGO_API_URL", "http://127.0.0.1:8000/api/")
+
 
 def register_user(telegram_id, username):
     try:
@@ -16,6 +18,4 @@ def register_user(telegram_id, username):
     except requests.exceptions.RequestException as e:
         print(f"Ошибка связи с Django API: {e}")
         return None
-
-
 

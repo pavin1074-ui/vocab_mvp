@@ -1,12 +1,13 @@
 # vocab/urls.py
 
-from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import RedirectView
+
 from . import views
+
 #from vocab.views import progress_view  # ← Импортируем view
 urlpatterns = [
     path('test/', views.test_view, name='test'),

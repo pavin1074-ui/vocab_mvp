@@ -1,20 +1,20 @@
-#### vocab_mvp/bot/telegram_bot.py
+# vocab_mvp/bot/telegram_bot.py
 
 import asyncio
 import os
-import sys
 import random
+import sys
 import tempfile
 from datetime import timedelta
 
-from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher, types
+from aiogram import Router
 from aiogram.filters import Command
+from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.types import Message
-from aiogram.fsm.storage.memory import MemoryStorage
-from aiogram import Router
 from asgiref.sync import sync_to_async
+from dotenv import load_dotenv
 
 # Загружаем .env
 load_dotenv()
@@ -33,7 +33,8 @@ django.setup()
 # Django / модели (импорты после django.setup)
 from django.core.files import File
 from django.utils import timezone
-from vocab.gigachat_translate import gigachat_translate
+# Если вы используете напрямую библиотеку:
+
 from vocab.models import TelegramUser, Card, Repetition, UserSettings
 from words.models import Word
 
@@ -60,6 +61,7 @@ router = Router()
 dp.include_router(router)
 
 SETTINGS_URL = "http://127.0.0.1:8000/settings/"
+
 
 def make_settings_keyboard(current_gender: str) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=[
@@ -123,7 +125,7 @@ async def handle_word_input(message: Message, text: str):
         )
         return
 
-   # Отправляем сообщение о начале обработки
+    # Отправляем сообщение о начале обработки
     processing_msg = await message.answer("🔄 Обрабатываю слово...")
 
     # Переводим слово
@@ -142,8 +144,9 @@ async def handle_word_input(message: Message, text: str):
             dest_lang = "ru"
 
         word_text = raw_text
-        # перевод через GigaChat
-        word_translation = gigachat_translate(word_text, src=src_lang, dest=dest_lang)
+        # перевод GoogleTranslator
+        from deep_translator import GoogleTranslator
+        word_translation = GoogleTranslator(source=src_lang, target=dest_lang).translate(word_text)
         if not word_translation or not word_translation.strip():
             raise Exception("Пустой перевод")
 
@@ -191,125 +194,125 @@ async def handle_word_input(message: Message, text: str):
     except Exception as audio_error:
         await message.answer(f"⚠️ Ошибка озвучивания перевода: {str(audio_error)[:30]}...")
 
-        # Сохраняем в БД и генерируем картинку
+    # Сохраняем в БД и генерируем картинку
+    try:
+        source_lang = 'ru' if detected_lang == 'ru' else 'en'
 
-        try:
-            source_lang = 'ru' if detected_lang == 'ru' else 'en'
-
-            word_obj, created = await sync_to_async(Word.objects.get_or_create)(
-                user=telegram_user,
-                text=word_text,
-                defaults={
-                    'translation': word_translation,
-                    'source_lang': source_lang,
-                    'next_review': timezone.now() + timedelta(hours=2),
-                }
-            )
-
-            if created:
-                try:
-                    img_path = generate_image_for_word(word_text)
-
-                    # Сохраняем файл в ImageField
-                    with open(img_path, "rb") as f:
-                        django_file = File(f, name=f"{word_text}.png")
-                        await sync_to_async(word_obj.image.save)(
-                            django_file.name,
-                            django_file,
-                            save=True,
-                        )
-
-                    # Удаляем временный файл
-                    if os.path.exists(img_path):
-                        os.remove(img_path)
-
-                    # Пытаемся отправить картинку в Telegram
-                    try:
-                        photo = types.FSInputFile(path=word_obj.image.path)
-                        await message.answer_photo(
-                            photo=photo,
-                            caption="🖼 Картинка для этого слова",
-                        )
-                    except Exception as send_err:
-                        print(f"Error sending photo: {send_err}")
-
-                except ImageGenerationError as ge:
-                    print(f"Image gen error: {ge}")
-                except Exception as ge:
-                    print(f"Unexpected image gen error: {ge}")
-
-        except Exception as db_error:
-            print(f"Ошибка сохранения: {db_error}")
-
-    async def start_quiz(message: Message):
-        """Начинает тестирование"""
-        try:
-            telegram_user = await sync_to_async(TelegramUser.objects.get)(telegram_id=message.from_user.id)
-            words = await sync_to_async(list)(Word.objects.filter(user=telegram_user))
-
-            if len(words) < 1:
-                await bot.send_message(
-                    message.chat.id,
-                    "📚 Нужно минимум 1 слово для теста.\n"
-                    "Добавьте несколько слов!",
-                    reply_markup=main_menu_kb
-                )
-                return
-
-            valid_words = [w for w in words if w.text.lower().strip() != w.translation.lower().strip()]
-
-            if len(valid_words) < 1:
-                await bot.send_message(
-                    message.chat.id,
-                    "📚 Нет подходящих слов для теста.\n"
-                    "Добавьте слова, которые переводятся по-разному!",
-                    reply_markup=main_menu_kb
-                )
-                return
-
-            random_word = random.choice(valid_words)
-
-            def has_cyrillic(text: str) -> bool:
-                return any('а' <= c <= 'я' or c in 'ёЁ' for c in text.lower())
-
-            word_lang = 'ru' if has_cyrillic(random_word.text) else 'en'
-
-            user_states[message.from_user.id] = {
-                "state": "waiting_for_answer",
-                "correct_answer": random_word.translation.lower().strip(),
-                "word": random_word.text
+        word_obj, created = await sync_to_async(Word.objects.get_or_create)(
+            user=telegram_user,
+            text=word_text,
+            defaults={
+                'translation': word_translation,
+                'source_lang': source_lang,
+                'next_review': timezone.now() + timedelta(hours=2),
             }
+        )
 
-            await bot.send_message(
-                message.chat.id,
-                f"🧠 Тест начался!\n\n"
-                f"📖 Переведите слово:\n\n"
-                f"**{random_word.text}**\n\n"
-                "Напишите перевод:"
-            )
-
+        if created:
             try:
-                audio_path = synthesize_text_to_mp3(random_word.text, lang=word_lang)
-                voice_file = types.FSInputFile(path=audio_path)
-                await bot.send_voice(
-                    message.chat.id,
-                    voice=voice_file,
-                    caption=f"🔊 Прослушайте: {random_word.text}"
-                )
-                if os.path.exists(audio_path):
-                    os.remove(audio_path)
-            except Exception as audio_error:
-                await bot.send_message(
-                    message.chat.id,
-                    f"⚠️ Ошибка озвучивания: {str(audio_error)[:30]}..."
-                )
+                img_path = generate_image_for_word(word_text)
 
-        except TelegramUser.DoesNotExist:
+                # Сохраняем файл в ImageField
+                with open(img_path, "rb") as f:
+                    django_file = File(f, name=f"{word_text}.png")
+                    await sync_to_async(word_obj.image.save)(
+                        django_file.name,
+                        django_file,
+                        save=True,
+                    )
+
+                # Удаляем временный файл
+                if os.path.exists(img_path):
+                    os.remove(img_path)
+
+                # Пытаемся отправить картинку в Telegram
+                try:
+                    photo = types.FSInputFile(path=word_obj.image.path)
+                    await message.answer_photo(
+                        photo=photo,
+                        caption="🖼 Картинка для этого слова",
+                    )
+                except Exception as send_err:
+                    print(f"Error sending photo: {send_err}")
+
+            except ImageGenerationError as ge:
+                print(f"Image gen error: {ge}")
+            except Exception as ge:
+                print(f"Unexpected image gen error: {ge}")
+
+    except Exception as db_error:
+        print(f"Ошибка сохранения: {db_error}")
+
+
+async def start_quiz(message: Message):
+    """Начинает тестирование"""
+    try:
+        telegram_user = await sync_to_async(TelegramUser.objects.get)(telegram_id=message.from_user.id)
+        words = await sync_to_async(list)(Word.objects.filter(user=telegram_user))
+
+        if len(words) < 1:
             await bot.send_message(
                 message.chat.id,
-                "Вы не зарегистрированы. Используйте /start.",
+                "📚 Нужно минимум 1 слово для теста.\n"
+                "Добавьте несколько слов!",
                 reply_markup=main_menu_kb
             )
+            return
+
+        valid_words = [w for w in words if w.text.lower().strip() != w.translation.lower().strip()]
+
+        if len(valid_words) < 1:
+            await bot.send_message(
+                message.chat.id,
+                "📚 Нет подходящих слов для теста.\n"
+                "Добавьте слова, которые переводятся по-разному!",
+                reply_markup=main_menu_kb
+            )
+            return
+
+        random_word = random.choice(valid_words)
+
+        def has_cyrillic(text: str) -> bool:
+            return any('а' <= c <= 'я' or c in 'ёЁ' for c in text.lower())
+
+        word_lang = 'ru' if has_cyrillic(random_word.text) else 'en'
+
+        user_states[message.from_user.id] = {
+            "state": "waiting_for_answer",
+            "correct_answer": random_word.translation.lower().strip(),
+            "word": random_word.text
+        }
+
+        await bot.send_message(
+            message.chat.id,
+            f"🧠 Тест начался!\n\n"
+            f"📖 Переведите слово:\n\n"
+            f"**{random_word.text}**\n\n"
+            "Напишите перевод:"
+        )
+
+        try:
+            audio_path = synthesize_text_to_mp3(random_word.text, lang=word_lang)
+            voice_file = types.FSInputFile(path=audio_path)
+            await bot.send_voice(
+                message.chat.id,
+                voice=voice_file,
+                caption=f"🔊 Прослушайте: {random_word.text}"
+            )
+            if os.path.exists(audio_path):
+                os.remove(audio_path)
+        except Exception as audio_error:
+            await bot.send_message(
+                message.chat.id,
+                f"⚠️ Ошибка озвучивания: {str(audio_error)[:30]}..."
+            )
+
+    except TelegramUser.DoesNotExist:
+        await bot.send_message(
+            message.chat.id,
+            "Вы не зарегистрированы. Используйте /start.",
+            reply_markup=main_menu_kb
+        )
 
 
 
@@ -462,6 +465,33 @@ async def process_start_test_callback(callback_query: types.CallbackQuery):
     await start_quiz(fake_message)
 
 
+@router.callback_query(lambda c: c.data.startswith("pronounce_"))
+async def pronounce_callback(callback: types.CallbackQuery):
+    # Извлекаем текст для озвучки из callback_data
+    text_to_speak = callback.data.split("_", 1)[1]
+
+    try:
+        # Используем вашу функцию синтеза
+        lang = 'en' if any('a' <= c <= 'z' for c in text_to_speak.lower()) else 'ru'
+        audio_path = synthesize_text_to_mp3(text_to_speak, lang=lang)
+
+        if audio_path and os.path.exists(audio_path):
+            voice_file = types.FSInputFile(path=audio_path)
+            await callback.message.answer_voice(voice=voice_file, caption=f"🔊 {text_to_speak}")
+            os.remove(audio_path)
+            await callback.answer()  # Убираем "часики" на кнопке
+    except Exception as e:
+        await callback.answer(f"Ошибка озвучки: {str(e)[:30]}", show_alert=True)
+
+
+@router.callback_query(lambda c: c.data.startswith("pronounce_"))
+async def process_pronounce(callback: types.CallbackQuery):
+    text = callback.data.replace("pronounce_", "")
+    # Тут твой код вызова synthesize_text_to_mp3 и отправки voice
+    await callback.answer() # Обязательно, чтобы кнопка не "залипала"
+
+
+
 # ============ COMMAND HANDLERS ============
 
 @router.message(Command(commands=["start"]))
@@ -601,9 +631,12 @@ async def review_handler(message: Message):
         return
 
     due_repetitions = await sync_to_async(list)(
-        Repetition.objects.filter(card__owner=telegram_user, next_review__lte=timezone.now()).select_related(
-            'card')[:1]
+        Repetition.objects.filter(
+            card__owner=telegram_user,
+            next_review__lte=timezone.now()
+        ).select_related('card').order_by('next_review')[:1] # Берем самое старое
     )
+
 
     if not due_repetitions:
         await message.answer("Нет слов для повторения. Молодец!", reply_markup=main_menu_kb)
@@ -658,18 +691,28 @@ async def handle_quiz_answer(message: Message, text: str):
 
     if card_id:
         try:
-            card = await sync_to_async(Card.objects.get)(id=card_id)
-            repetition = await sync_to_async(lambda: card.repetition)()
-            repetition.schedule_review(quality)
+            # Получаем карточку и репетицию
+            card = await sync_to_async(Card.objects.select_related('repetition').get)(id=card_id)
+
+            # Оборачиваем вызов метода в sync_to_async, так как он лезет в БД
+            await sync_to_async(card.repetition.schedule_review)(quality)
+            print(f"✅ Статистика обновлена для карточки {card_id}")
         except Exception as e:
-            print(f"Ошибка обновления повторения: {e}")
+            print(f"❌ Ошибка обновления повторения: {e}")
+    pronounce_kb = types.InlineKeyboardMarkup(inline_keyboard=[
+        [types.InlineKeyboardButton(
+            text="🔊 Прослушать ответ",
+            callback_data=f"pronounce_{correct_answer[:40]}"
+        )]
+    ])
 
     if user_answer == correct_answer:
         result_text = f"✅ **Правильно!**\n\n📝 {original_word} — {correct_answer}\n🎉 Отличная работа!"
     else:
         result_text = f"❌ **Неправильно!**\n\n📝 {original_word} — **{correct_answer}**\n💭 Ваш ответ: {user_answer}\n💪 Попробуйте ещё раз позже!"
+    await message.answer(result_text, reply_markup=pronounce_kb)
 
-    await message.answer(result_text, reply_markup=main_menu_kb)
+
 
 async def main():
     print("🤖 Bot is starting...")

@@ -4,10 +4,11 @@
 """
 
 import os
-import speech_recognition as sr
-import tempfile
-import subprocess
 import shutil
+import subprocess
+import tempfile
+
+import speech_recognition as sr
 
 
 def convert_ogg_to_wav_ffmpeg(ogg_path: str, wav_path: str) -> bool:

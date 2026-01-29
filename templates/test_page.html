@@ -145,6 +145,14 @@
             <div class="result-details">
                 <strong>{{ previous_word }}</strong> = <strong>{{ correct_translation }}</strong>
                 {% if result == 'incorrect' %}
+                <!-- Кнопка озвучки ПРАВИЛЬНОГО ответа -->
+                <button type="button"
+                        class="play-button"
+                        style="font-size: 18px; margin-left: 10px;"
+                        onclick="playTranslationAudio('{{ correct_translation|escapejs }}')"
+                        title="Озвучить правильный перевод">
+                    🔊
+                </button>
                     <br>Ваш ответ: {{ user_translation }}
                 {% endif %}
             </div>
@@ -203,66 +211,101 @@
 </div>
 
 <script>
-// ✅ ЕДИНСТВЕННАЯ функция озвучки
-function playWordAudio(wordId) {
-    const url = `/words/${wordId}/audio/`;  // ✅ Теперь использует РАБОЧИЙ URL
+    // ✅ ЕДИНСТВЕННАЯ функция озвучки
+    function playWordAudio(wordId) {
+        const url = `/words/${wordId}/audio/`;
+        const audio = new Audio(url);
+        audio.play().catch(e => {
+            console.error("Ошибка воспроизведения:", e);
+            alert("Не удалось воспроизвести аудио.");
+        });
+    }
+
+// Озвучка произвольного текста (перевода)
+function playTranslationAudio(text) {
+    // Используем автоопределение языка на бэкенде
+    const url = `/words/speak/?text=${encodeURIComponent(text)}&lang=auto`;
     const audio = new Audio(url);
     audio.play().catch(e => {
-        console.error("Ошибка воспроизведения:", e);
-        alert("Не удалось воспроизвести аудио.");
+        console.error("Ошибка озвучки перевода:", e);
     });
 }
 
-// Голосовой ввод
-const micButton = document.getElementById('micButton');
-const translationInput = document.getElementById('translation');
-const voiceStatus = document.getElementById('voiceStatus');
 
-if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'ru-RU';
-    recognition.continuous = false;
-    recognition.interimResults = false;
-
-    let isListening = false;
-
-    micButton.addEventListener('click', () => {
-        if (isListening) {
-            recognition.stop();
-            return;
-        }
-        recognition.start();
-        isListening = true;
-        micButton.classList.add('listening');
-        voiceStatus.textContent = '🎤 Слушаю... Говорите перевод';
-    });
-
-    recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        translationInput.value = transcript;
-        voiceStatus.textContent = '✅ Распознано: ' + transcript;
-        setTimeout(() => voiceStatus.textContent = '', 3000);
-    };
-
-    recognition.onerror = (event) => {
-        console.error('Speech recognition error:', event.error);
-        voiceStatus.textContent = '⚠️ Ошибка: ' + event.error;
-        setTimeout(() => voiceStatus.textContent = '', 3000);
-    };
-
-    recognition.onend = () => {
-        isListening = false;
-        micButton.classList.remove('listening');
-    };
-} else {
-    micButton.style.display = 'none';
+function playTranslationAudio(text) {
+    // Вызываем ваш эндпоинт speak_text с автоопределением языка
+    const url = `/words/speak/?text=${encodeURIComponent(text)}&lang=auto`;
+    const audio = new Audio(url);
+    audio.play().catch(e => console.error("Ошибка озвучки:", e));
 }
 
-// Автофокус
-if (translationInput) {
-    translationInput.focus();
-}
+
+    // Голосовой ввод
+    const micButton = document.getElementById('micButton');
+    const translationInput = document.getElementById('translation');
+    const voiceStatus = document.getElementById('voiceStatus');
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+
+        // --- УМНОЕ ОПРЕДЕЛЕНИЕ ЯЗЫКА ---
+        {% if word %}
+            // Если в исходном слове есть кириллица, значит ответ ждем на АНГЛИЙСКОМ
+            const isRussianSource = /[а-яё]/i.test("{{ word.text|escapejs }}");
+            recognition.lang = isRussianSource ? 'en-US' : 'ru-RU';
+        {% else %}
+            recognition.lang = 'ru-RU';
+        {% endif %}
+        console.log("Ожидаемый язык ввода:", recognition.lang);
+        // ------------------------------
+
+        recognition.continuous = false;
+        recognition.interimResults = false;
+
+        let isListening = false;
+
+        micButton.addEventListener('click', () => {
+            if (isListening) {
+                recognition.stop();
+                return;
+            }
+            recognition.start();
+            isListening = true;
+            micButton.classList.add('listening');
+            voiceStatus.textContent = '🎤 Слушаю... Говорите перевод';
+        });
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            translationInput.value = transcript;
+            voiceStatus.textContent = '✅ Распознано: ' + transcript;
+
+            // Автоматическая отправка формы после распознавания (по желанию)
+            // setTimeout(() => document.getElementById('testForm').submit(), 500);
+        };
+
+        recognition.onerror = (event) => {
+            console.error('Speech recognition error:', event.error);
+            voiceStatus.textContent = '⚠️ Ошибка: ' + event.error;
+        };
+
+        recognition.onend = () => {
+            isListening = false;
+            micButton.classList.remove('listening');
+            if (voiceStatus.textContent.includes('Слушаю')) {
+                voiceStatus.textContent = '';
+            }
+        };
+    } else {
+        micButton.style.display = 'none';
+    }
+
+    // Автофокус на поле ввода
+    if (translationInput) {
+        translationInput.focus();
+    }
+
 </script>
 
 
