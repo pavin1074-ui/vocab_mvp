@@ -389,7 +389,15 @@
       <option name="project" value="LOCAL" />
       <updated>1771771921326</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="Added a README">
+      <option name="closed" value="true" />
+      <created>1771772265773</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1771772265773</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -426,6 +434,7 @@
     <MESSAGE value="Remove .env from index" />
     <MESSAGE value="Remove .env from index&#10;PythonProject\vocab_mvp" />
     <MESSAGE value="&#10;Add pictures" />
-    <option name="LAST_COMMIT_MESSAGE" value="&#10;Add pictures" />
+    <MESSAGE value="Added a README" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added a README" />
   </component>
 </project>
