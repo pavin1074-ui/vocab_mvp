@@ -1,7 +1,10 @@
 #vocab/utils.py:
+from io import BytesIO
 
 import requests
 from deep_translator import GoogleTranslator
+from django.core.files import File
+
 
 def universal_translate(text, src='en', dest='ru'):
     return GoogleTranslator(source=src, target=dest).translate(text)
@@ -48,3 +51,27 @@ def get_word_difficulty(word: str) -> str:
         return 'intermediate'
     else:
         return 'advanced'
+
+
+
+def get_or_generate_image(instance):
+    """
+    Проверяет картинку у объекта (Word или Card).
+    Если её нет — генерирует через Pollinations AI и сохраняет.
+    """
+    if instance.image:
+        return instance.image.url
+
+    try:
+        prompt = f"minimalist 3d render of {instance.text}, educational flashcard style, white background"
+        url = f"https://image.pollinations.ai{prompt}?width=512&height=512&nologo=true"
+
+        response = requests.get(url, timeout=15)
+        if response.status_code == 200:
+            file_name = f"{instance.text}.jpg"
+            instance.image.save(file_name, File(BytesIO(response.content)), save=True)
+            return instance.image.url
+    except Exception as e:
+        print(f"Ошибка генерации картинки: {e}")
+
+    return None

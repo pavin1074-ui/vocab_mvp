@@ -6,11 +6,13 @@ import random
 import sys
 import tempfile
 from datetime import timedelta
+import voice
 
 from aiogram import Bot, Dispatcher, types
 from aiogram import Router
 from aiogram.filters import Command
 from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.types import FSInputFile, URLInputFile
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.types import Message
 from asgiref.sync import sync_to_async
@@ -97,6 +99,7 @@ def make_settings_keyboard(current_gender: str) -> InlineKeyboardMarkup:
 main_menu_kb = types.InlineKeyboardMarkup(inline_keyboard=[
     [types.InlineKeyboardButton(text="📝 Ввести слово", callback_data="enter_word")],
     [types.InlineKeyboardButton(text="🧠 Начать тест", callback_data="start_test")],
+    [types.InlineKeyboardButton(text="🔁 Повторение", callback_data="start_review")],
     [types.InlineKeyboardButton(text="⚙️ Настройки", callback_data="settings")]
 ])
 
@@ -292,6 +295,7 @@ async def start_quiz(message: Message):
         )
 
         try:
+            # Добавляем await перед вызовом async-функции
             audio_path = synthesize_text_to_mp3(random_word.text, lang=word_lang)
             voice_file = types.FSInputFile(path=audio_path)
             await bot.send_voice(
@@ -314,16 +318,12 @@ async def start_quiz(message: Message):
             reply_markup=main_menu_kb
         )
 
-
-
-
-
 # ============ CALLBACK HANDLERS ============
 
 @router.callback_query(lambda c: c.data == 'enter_word')
 async def process_enter_word_callback(callback_query: types.CallbackQuery):
     """Обработка кнопки 'Ввести слово'"""
-    await bot.answer_callback_query(callback_query.id)
+    await callback_query.answer()
     user_states[callback_query.from_user.id] = "waiting_for_word"
     await bot.send_message(
         callback_query.from_user.id,
@@ -368,7 +368,11 @@ async def cmd_settings(message: Message):
 @router.callback_query(lambda c: c.data == "settings")
 async def process_settings_callback(callback_query: types.CallbackQuery):
     """Кнопка '⚙️ Настройки' из главного меню — открывает то же меню, что /settings."""
-    await bot.answer_callback_query(callback_query.id)
+    try:
+        await callback_query.answer()
+    except Exception:
+        # Игнорируем ошибку, если запрос "протух"
+        pass
 
     # Вся логика cmd_settings, но через callback_query, без fake Message
     try:
@@ -406,7 +410,12 @@ async def process_settings_callback(callback_query: types.CallbackQuery):
 @router.callback_query(lambda c: c.data in ("voice_female", "voice_male"))
 async def process_voice_choice(callback_query: types.CallbackQuery):
     """Обработка выбора голоса."""
-    await bot.answer_callback_query(callback_query.id)
+    try:
+        await callback_query.answer()
+    except Exception:
+        # Игнорируем ошибку, если запрос "протух"
+        pass
+
     gender = "female" if callback_query.data == "voice_female" else "male"
 
     try:
@@ -420,17 +429,25 @@ async def process_voice_choice(callback_query: types.CallbackQuery):
         await sync_to_async(settings.save)()
 
         kb = make_settings_keyboard(settings.voice_gender)
+        try:
+            await bot.edit_message_text(
+                chat_id=callback_query.message.chat.id,
+                message_id=callback_query.message.message_id,
+                text=(
+                    "⚙️ Настройки озвучки\n\n"
+                    f"Текущий голос: {'женский' if gender == 'female' else 'мужской'}.\n\n"
+                    "Выбери голос для озвучки кнопками ниже или открой веб-страницу настроек."
+                ),
+                reply_markup=kb
+            )
+        except Exception as e:
+            if "message is not modified" in str(e):
+                # Если текст тот же самый — просто отвечаем на кнопку, чтобы убрать часики
+                await callback_query.answer("Изменений нет")
+            else:
+                # Если какая-то другая ошибка — выводим её
+                print(f"Ошибка сохранения: {e}")
 
-        await bot.edit_message_text(
-            chat_id=callback_query.message.chat.id,
-            message_id=callback_query.message.message_id,
-            text=(
-                "⚙️ Настройки озвучки\n\n"
-                f"Текущий голос: {'женский' if gender == 'female' else 'мужской'}.\n\n"
-                "Выбери голос для озвучки кнопками ниже или открой веб-страницу настроек."
-            ),
-            reply_markup=kb
-        )
     except Exception as e:
         await bot.send_message(
             callback_query.from_user.id,
@@ -441,7 +458,12 @@ async def process_voice_choice(callback_query: types.CallbackQuery):
 
 @router.callback_query(lambda c: c.data == "back_to_menu")
 async def process_back_to_menu(callback_query: types.CallbackQuery):
-    await bot.answer_callback_query(callback_query.id)
+    try:
+        await callback_query.answer()
+    except Exception:
+        # Игнорируем ошибку, если запрос "протух"
+        pass
+
     await bot.send_message(
         callback_query.from_user.id,
         "Главное меню:",
@@ -454,7 +476,12 @@ async def process_back_to_menu(callback_query: types.CallbackQuery):
 @router.callback_query(lambda c: c.data == 'start_test')
 async def process_start_test_callback(callback_query: types.CallbackQuery):
     """Обработка кнопки 'Начать тест'"""
-    await bot.answer_callback_query(callback_query.id)
+    try:
+        await callback_query.answer()
+    except Exception:
+        # Игнорируем ошибку, если запрос "протух"
+        pass
+
     # Создаем fake message объект для передачи в start_quiz
     fake_message = Message(
         message_id=callback_query.message.message_id,
@@ -463,6 +490,85 @@ async def process_start_test_callback(callback_query: types.CallbackQuery):
         from_user=callback_query.from_user
     )
     await start_quiz(fake_message)
+
+
+
+
+
+
+
+@router.callback_query(lambda c: c.data == 'start_review')
+async def process_start_review_callback(callback_query: types.CallbackQuery):
+    """Обработка кнопки 'Повторение'"""
+    try:
+        await callback_query.answer()
+    except Exception:
+        pass
+
+    # Создаем fake message объект и привязываем к нему бота
+    fake_message = Message(
+        message_id=callback_query.message.message_id,
+        date=callback_query.message.date,
+        chat=callback_query.message.chat,
+        from_user=callback_query.from_user
+    ).as_(callback_query.bot)  # <--- Ключевое исправление
+
+    await review_handler(fake_message)
+
+
+
+
+
+
+@router.callback_query(lambda c: c.data.startswith("review_q"))
+async def process_review_quality(callback_query: types.CallbackQuery):
+    """Обработка оценки повторения"""
+    try:
+        await callback_query.answer()
+    except Exception:
+        pass
+    
+    # Извлекаем оценку и ID карточки
+    # Формат: review_q1_123, review_q2_123 и т.д.
+    parts = callback_query.data.split('_')
+    quality = int(parts[1][1])  # Извлекаем цифру из "q1", "q2" и т.д.
+    card_id = int(parts[2])
+
+    try:
+        # Получаем карточку и репетицию
+        card = await sync_to_async(Card.objects.select_related('repetition').get)(id=card_id)
+
+        # Обновляем интервал по SM-2 (важно: вызываем метод через sync_to_async)
+        repetition = card.repetition
+        await sync_to_async(repetition.schedule_review)(quality)
+
+        quality_names = {
+            1: "Совсем не помнил",
+            2: "С трудом",
+            3: "Хорошо",
+            4: "Отлично"
+        }
+
+        result_text = f"✅ Оценка сохранена: {quality_names[quality]}\n\n"
+
+        # Показываем следующее повторение
+        next_review = repetition.next_review
+        result_text += f"📅 Следующее повторение: {next_review.strftime('%d.%m.%Y %H:%M')}"
+
+        # ИСПРАВЛЕНО: Добавлен text=result_text
+        await callback_query.bot.send_message(
+            chat_id=callback_query.from_user.id,
+            text=result_text,  # <--- БЕЗ ЭТОГО БОТ МОЛЧАЛ
+            reply_markup=main_menu_kb
+        )
+
+    except Exception as e:
+        # ИСПРАВЛЕНО: Убедись, что тут тоже именованные аргументы
+        await callback_query.bot.send_message(
+            chat_id=callback_query.from_user.id,
+            text=f"⚠️ Ошибка сохранения: {str(e)[:100]}",
+            reply_markup=main_menu_kb
+        )
 
 
 @router.callback_query(lambda c: c.data.startswith("pronounce_"))
@@ -512,10 +618,11 @@ async def start_handler(message: Message):
         else:
             welcome_text = f"Привет снова, {user_name}! 😊\n\n"
 
-        welcome_text += (
+        welcome_text = (
             "📚 Основные функции:\n"
             "• Нажмите 'Ввести слово' - я переведу и озвучу\n"
             "• Нажмите 'Начать тест' - проверьте свои знания\n"
+            "• Нажмите 'Повторение' - повторите слова по SM-2\n"
             "• 🎤 Можно отправлять голосовые сообщения!\n\n"
             "Выберите действие:"
         )
@@ -538,11 +645,19 @@ async def handle_voice_message(message: Message):
     user_state = user_states.get(message.from_user.id)
 
     # Проверяем, что пользователь в состоянии ожидания
-    if user_state not in ["waiting_for_word"] and not (isinstance(user_state, dict) and user_state.get("state") == "waiting_for_answer"):
+    valid_states = ["waiting_for_word"]
+    valid_dict_states = ["waiting_for_answer", "waiting_for_review_answer"]
+    
+    is_valid = user_state in valid_states or (
+        isinstance(user_state, dict) and user_state.get("state") in valid_dict_states
+    )
+    
+    if not is_valid:
         await message.answer(
             "🎤 Чтобы использовать голосовой ввод:\n\n"
             "• Нажмите 'Ввести слово' и отправьте голосовое\n"
-            "• Или 'Начать тест' и ответьте голосом",
+            "• Или 'Начать тест' и ответьте голосом\n"
+            "• Или 'Повторение' и ответьте голосом",
             reply_markup=main_menu_kb
         )
         return
@@ -574,7 +689,7 @@ async def handle_voice_message(message: Message):
         if user_state == "waiting_for_word":
             user_states.pop(message.from_user.id, None)
             await handle_word_input(message, recognized_text)
-        elif isinstance(user_state, dict) and user_state.get("state") == "waiting_for_answer":
+        elif isinstance(user_state, dict) and user_state.get("state") in ["waiting_for_answer", "waiting_for_review_answer"]:
             await handle_quiz_answer(message, recognized_text)
 
     except Exception as e:
@@ -608,6 +723,11 @@ async def handle_message(message: Message):
         # Пользователь отвечает на вопрос в тесте
         await handle_quiz_answer(message, text)
         return
+    
+    elif isinstance(user_state, dict) and user_state.get("state") == "waiting_for_review_answer":
+        # Пользователь отвечает на вопрос в повторении
+        await handle_quiz_answer(message, text)
+        return
 
     # Если это неизвестная команда/сообщение, показываем помощь
     await message.answer(
@@ -624,20 +744,26 @@ async def handle_message(message: Message):
 
 @router.message(Command(commands=["review"]))
 async def review_handler(message: Message):
+    """
+    Обработчик команды /review и кнопки 'Повторение'.
+    Показывает только слово, ответ скрыт за кнопкой.
+    """
     try:
+        # 1. Получаем пользователя из базы Django
         telegram_user = await sync_to_async(TelegramUser.objects.get)(telegram_id=message.from_user.id)
     except TelegramUser.DoesNotExist:
         await message.answer("Вы не зарегистрированы. Используйте /start.", reply_markup=main_menu_kb)
         return
 
+    # 2. Ищем одну карточку, которую пора повторить (SM-2)
     due_repetitions = await sync_to_async(list)(
         Repetition.objects.filter(
             card__owner=telegram_user,
             next_review__lte=timezone.now()
-        ).select_related('card').order_by('next_review')[:1] # Берем самое старое
+        ).select_related('card').order_by('next_review')[:1]
     )
 
-
+    # 3. Если слов для повторения нет
     if not due_repetitions:
         await message.answer("Нет слов для повторения. Молодец!", reply_markup=main_menu_kb)
         return
@@ -645,34 +771,91 @@ async def review_handler(message: Message):
     repetition = due_repetitions[0]
     card = repetition.card
 
-    user_states[message.from_user.id] = {
-        "state": "waiting_for_review_answer",
-        "card_id": card.id,
-        "correct_answer": card.translation.lower().strip(),
-        "word": card.word
-    }
+    # 4. Создаем кнопку "Показать перевод", чтобы не спойлерить ответ сразу
+    show_kb = types.InlineKeyboardMarkup(inline_keyboard=[
+        [types.InlineKeyboardButton(text="👁 Показать перевод", callback_data=f"show_answer_{card.id}")]
+    ])
 
-    await message.answer(
-        f"🧠 Повторение:\n\n"
-        f"📖 Переведите слово:\n\n"
-        f"**{card.word}**\n\n"
-        "Напишите перевод:",
-        reply_markup=types.ReplyKeyboardMarkup(
-            keyboard=[[types.KeyboardButton(text="Отменить повторение")]],
-            resize_keyboard=True
-        )
-    )
+    caption = f"🧠 Повторение:\n\n📖 Переведите слово:\n\n**{card.word}**"
 
+    # 5. Отправляем сообщение (с фото или без) ТОЛЬКО со словом и кнопкой
+    if card.image:
+        try:
+            photo = types.FSInputFile(path=card.image.path)
+            await message.answer_photo(
+                photo=photo,
+                caption=caption,
+                reply_markup=show_kb
+            )
+        except Exception as e:
+            print(f"Ошибка отправки фото: {e}")
+            await message.answer(caption, reply_markup=show_kb)
+    else:
+        await message.answer(caption, reply_markup=show_kb)
+
+    #  Озвучка слова
     try:
         lang = 'ru' if any('а' <= c <= 'я' for c in card.word.lower()) else 'en'
         audio_path = synthesize_text_to_mp3(card.word, lang=lang)
         voice_file = types.FSInputFile(path=audio_path)
-        await message.answer_voice(voice=voice_file, caption="🔊 Слово")
+        await message.answer_voice(voice=voice_file, caption="🔊 Произношение")
         if os.path.exists(audio_path):
             os.remove(audio_path)
     except Exception as e:
-        await message.answer(f"⚠️ Ошибка озвучки: {str(e)[:30]}...")
+        print(f"Ошибка озвучки: {e}")
 
+
+# Обработчик нажатия на кнопку "Показать перевод"
+@router.callback_query(lambda c: c.data.startswith("show_answer_"))
+async def process_show_answer_callback(callback_query: types.CallbackQuery):
+    # 1. Снимаем индикатор ожидания ("часики") и уведомляем пользователя о принятии запроса
+    await callback_query.answer("Обрабатываю...")
+
+    # 2. Получаем ID карточки из кнопки
+    card_id = int(callback_query.data.split('_')[2])
+    card = await sync_to_async(Card.objects.get)(id=card_id)
+
+    # 3. Получаем настройки пользователя
+    telegram_user = await sync_to_async(TelegramUser.objects.get)(telegram_id=callback_query.from_user.id)
+    user_settings, _ = await sync_to_async(UserSettings.objects.get_or_create)(user=telegram_user)
+
+    # 4. Определяем язык перевода (английский или русский)
+    lang = 'ru' if any('a' <= c <= 'z' for c in card.word.lower()) else 'en'
+
+    # 5. Формируем сообщение с переводом и кнопками оценки
+    translation_text = (
+        "💡 Перевод: **%s**\n\nОцените, насколько легко вы вспомнили:" % card.translation
+    )
+    quality_kb = types.InlineKeyboardMarkup(inline_keyboard=[
+        [
+            types.InlineKeyboardButton(text="1 — Совсем не помнил", callback_data=f"review_q1_{card.id}")
+        ],
+        [
+            types.InlineKeyboardButton(text="2 — С трудом", callback_data=f"review_q2_{card.id}")
+        ],
+        [
+            types.InlineKeyboardButton(text="3 — Хорошо", callback_data=f"review_q3_{card.id}")
+        ],
+        [
+            types.InlineKeyboardButton(text="4 — Отлично", callback_data=f"review_q4_{card.id}")
+        ]
+    ])
+    await callback_query.message.answer(translation_text, reply_markup=quality_kb)
+
+    # 6. Начинаем синтез речи и отправляем голосовое сообщение
+    try:
+        # Синхронизируем получение настроек и начинаем синтез речи
+        gender = user_settings.voice_gender
+        audio_path = synthesize_text_to_mp3(card.translation, lang=lang)
+
+        if os.path.exists(audio_path):
+            # Готовим файл и отправляем голосовое сообщение
+            voice_file = FSInputFile(audio_path)
+            await callback_query.message.answer_voice(voice=voice_file)
+            os.remove(audio_path)  # Удаляем временный файл после отправки
+
+    except Exception as e:
+        print(f"Ошибка озвучки: {e}")
 async def handle_quiz_answer(message: Message, text: str):
     user_state = user_states.get(message.from_user.id, {})
     state_type = user_state.get("state")
@@ -710,7 +893,7 @@ async def handle_quiz_answer(message: Message, text: str):
         result_text = f"✅ **Правильно!**\n\n📝 {original_word} — {correct_answer}\n🎉 Отличная работа!"
     else:
         result_text = f"❌ **Неправильно!**\n\n📝 {original_word} — **{correct_answer}**\n💭 Ваш ответ: {user_answer}\n💪 Попробуйте ещё раз позже!"
-    await message.answer(result_text, reply_markup=pronounce_kb)
+        await message.answer(result_text, reply_markup=pronounce_kb)
 
 
 

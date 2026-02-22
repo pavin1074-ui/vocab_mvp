@@ -27,6 +27,7 @@ from rest_framework.views import APIView
 
 from vocab.deep_translate import GoogleTranslator
 from vocab.models import TelegramUser
+from vocab.utils import get_or_generate_image
 from .models import Word
 
 logger = logging.getLogger(__name__)
@@ -93,6 +94,14 @@ def test_view(request):
 
     return render(request, 'test_page.html', context)
 
+
+    if words.exists():
+        word = random.choice(words)
+        # Вызываем проверку/генерацию
+        get_or_generate_image(word)
+
+        # ... (ваш текущий контекст) ...
+        return render(request, 'test_page.html', context)
 
 
 class RegisterUser(APIView):

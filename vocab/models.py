@@ -156,28 +156,36 @@ def create_repetition(sender, instance, created, **kwargs):
 
 
 @receiver(post_save, sender='words.Word')
-def create_card_for_word(sender, instance, created, **kwargs):
+def create_cards_for_all_users(sender, instance, created, **kwargs):
+    """
+    При создании нового слова в админке, оно автоматически
+    становится карточкой для ВСЕХ зарегистрированных пользователей.
+    """
     if created:
         try:
-            # 1. Получаем объект тестового пользователя
-            telegram_user, _ = TelegramUser.objects.get_or_create(
-                telegram_id=12345,
-                defaults={'username': 'test_user'}
-            )
+            # 1. Получаем всех живых пользователей (кроме тестового, если он мешает)
+            all_users = TelegramUser.objects.exclude(telegram_id=12345)
 
-            # 2. Печатаем для проверки (теперь имя переменной совпадает)
-            print(f"DEBUG: Юзер найден: {telegram_user} (ID: {telegram_user.id})")
+            if not all_users.exists():
+                print("DEBUG: Новых пользователей пока нет. Карточки не созданы.")
+                return
 
-            # 3. Создаем карточку
-            # Используем get_or_create, передавая defaults для корректной работы
-            Card.objects.get_or_create(
-                owner=telegram_user,
-                word=instance.text,
-                translation=instance.translation,
-                defaults={'difficulty': 'beginner'}
-            )
-            print(f"DEBUG: Карточка для '{instance.text}' успешно создана")
+            # 2. Создаем карточки для каждого пользователя
+            created_count = 0
+            for tg_user in all_users:
+                # Используем get_or_create, чтобы не дублировать, если слово уже есть
+                _, card_created = Card.objects.get_or_create(
+                    owner=tg_user,
+                    word=instance.text,
+                    defaults={
+                        'translation': instance.translation,
+                        'difficulty': 'beginner'
+                    }
+                )
+                if card_created:
+                    created_count += 1
+
+            print(f"✅ Слово '{instance.text}' успешно добавлено {created_count} пользователям.")
 
         except Exception as e:
-            # Теперь это сработает, так как есть блок try выше
             print(f"❌ ОШИБКА В СИГНАЛЕ: {e}")
